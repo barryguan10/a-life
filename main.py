@@ -1,53 +1,56 @@
 import pygame
 from random import randrange
-# GLOBALS
 
 
+#### GLOBALS
 SCREEN_WIDTH = 800          # Screen Width (Pixels)
 SCREEN_HEIGHT = 800         # Screen Height (Pixels)
 TILE_SIZE = 20               # Tile Size (Pixels)
-    # Number of "Cells" in Screen for both Width and Height 
+# Number of "Cells" in Screen for both Width and Height 
 WIDTH_CELL_COUNT = SCREEN_WIDTH // TILE_SIZE
 HEIGHT_CELL_COUNT = SCREEN_HEIGHT // TILE_SIZE
+# Captions for Python Screen
 CAPTION_PLAY = "Conway's Game of Life: PLAYING"
 CAPTION_PAUSED = "Conway's Game of Life: PAUSED"
-UPDATE_FREQ = 20 
+UPDATE_FREQ = 20  # Responsible for how fast the simulation updates (20= slow, 5 = fast)
 
-    # Colors Used
+# Colors Used
 BLACK = (0,0,0,)
 GREY = (128,128,128)
 GREEN = (0, 255, 0)
 
-    # Frames per second
+# Frames per second
 FPS = 60 
+
+### Classes
+
+    # To be added later
+
+### Pygame setup
 
 # Required for pygame to work - Initializes
 pygame.init()
 
-
 # creates a screen display surface of width, height
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-
-# create a caption for the main display surface
-pygame.display.set_caption("Conway's Game of Life: Paused")
-
-# create a smaller regular surface. 
-sim_window = pygame.Surface((100,200))
 
 # instantiates the clock for the game
 clock = pygame.time.Clock()
 
+
+### Function Definitions
+
 def gen(num):
-    # Generate a set of cell positions, represented as (x, y) integer positions
+    ''' Generate a set of cell positions, represented as (x, y) integer positions'''
     # used set comprehension. Long line so broken up on multi-line
     return {(randrange(0, WIDTH_CELL_COUNT), randrange(0, HEIGHT_CELL_COUNT)) 
                 for _ in range(num)}
 
-
-# function that draws the positions of alive cells
-#       positions is a set of alive cells only (no need to look at every cell)
 def draw_grid(positions): 
-    
+    '''
+    Draws the positions of "alive" cells
+    Argument: positions is a set of alive cells only (no need to look at every cell)
+    '''
     # draw alive cells
     for position in positions:
         col, row = position         # It's "Col, Row" due to X, Y (think 2D-Cartesian Coordinates)
@@ -63,7 +66,7 @@ def draw_grid(positions):
     for col in range(WIDTH_CELL_COUNT):
         pygame.draw.line(screen, BLACK, (col * TILE_SIZE, 0), (col * TILE_SIZE, SCREEN_HEIGHT))
 
-# Adjust Grid Positions
+# Adjust Grid Positions (ESSENTIALLY THIS FUNCTION IS SIMILAR TO OUR "OVERSEER")
 def adjust_grid(positions):
     all_neighbors = set()
     new_positions = set()
@@ -101,19 +104,21 @@ def adjust_grid(positions):
             # i.e., add to new_positions
             if len(neighbor_list) == 3:
                 new_positions.add(position)   
+    
     # return all new game positions
     return new_positions         
 
 
 def get_neighbors(pos):
+    '''Get list of all neighbor cells around the cell at argument "pos" '''
     x, y = pos
     neighbors = []
     for dx in [-1, 0, 1]:
-        # check if neighbor is off grid, skip if so 
+        # check if neighbor is off grid (i.e., left of 0 or right of screen width), skip if so 
         if x + dx < 0 or x + dx > WIDTH_CELL_COUNT:
             continue
         for dy in [-1, 0, 1]:
-            # check if neighbor is off grid, skip if so
+            # check if neighbor is off grid (i.e., above 0 or below screen height), skip if so
             if y + dy < 0 or y + dy > HEIGHT_CELL_COUNT:
                 continue
             # check if "neighbor" is actually the position; you can't be your own neighbor!
@@ -126,11 +131,9 @@ def get_neighbors(pos):
 def main(): 
     running = True  # varible to see if game should stop running
     playing = False # varible for pause
-    count = 0 
-
-
-
+    count = 0       # Used for game speed control, in conjunction with UPDATE_FREQ
     positions = set()       # Set of all alive postitions (initilized here)
+    
     while running:
         
         # Limit frame rate so computer isn't burning from running as quickly 
@@ -138,7 +141,7 @@ def main():
         clock.tick(FPS)
 
         if playing: 
-            count += 1 
+            count += 1      # Note: increasing count also updates how fast game runs 
         
         if count >= UPDATE_FREQ:
             count = 0 
