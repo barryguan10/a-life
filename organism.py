@@ -1,6 +1,8 @@
 class Organism:
     """Organism Class
-    This class defines an organism. Each Organism has an Energy Value and a Genome. 
+    This class defines an organism. Each Organism has an energy value and a Genome.
+    The energy value is a measure of it's current life force.
+    The genome is what give the organism its traits (i.e. speed, sensing distance, etc.)   
     """
     def __init__(self, energy, genome):
         self.energy = energy
