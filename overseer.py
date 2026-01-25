@@ -1,6 +1,4 @@
 import environment
-import organism
-
 
 class Overseer:
     def __init__(self):
