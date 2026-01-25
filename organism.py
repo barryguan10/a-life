@@ -24,3 +24,5 @@ class Organism:
             self.energy = self.energy + energy_gain
             return self.energy
     
+        def move(self, environment):
+            pass
