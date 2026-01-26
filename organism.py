@@ -2,6 +2,7 @@ from genome import Genome
 from colorsys import hsv_to_rgb
 from random import choice
 
+
 class Organism:
     """Organism Class
     This class defines an organism. Each Organism has a Genome that defines
@@ -12,7 +13,7 @@ class Organism:
         - energy (how much energy it is born with)
     """
 
-    def __init__(self, genome=None, x_pos, y_pos):
+    def __init__(self, genome=None, x_pos=0, y_pos=0):
         self.genome = genome if genome is not None else Genome(None, 4)
         phenotype = self.decode(self.genome)
         self.color = phenotype["color"]
@@ -63,5 +64,22 @@ class Organism:
             """
             self.energy = self.energy + energy_gain
             return self.energy
-        
-        
+
+        def get_pos(self):
+            '''Returns tuple of the x and y position of the organism'''
+            return x_pos, y_pos
+
+        def set_pos(x_pos, y_pos):
+            '''Sets the organisms postion'''
+            self.x_pos = x_pos
+            self.y_pos = y_pos
+
+        def get_heading(self):
+            """Returns the heading direction of the organism"""
+            return self.heading
+
+        def set_heading(self, heading):
+            """Sets the organisms desired heading"""
+            options = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
+            if heading in options:
+                self.heading = heading
