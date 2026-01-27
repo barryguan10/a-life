@@ -1,8 +1,8 @@
 import environment
 
 class Overseer:
-    def __init__(self):
-        self.environment_instance = None
+    def __init__(self,width,height):
+        self.environment_instance = environment.Environment(width, height)
 
     def new_simulator(self):
         self.environment_instance = environment.Environment()
@@ -13,7 +13,7 @@ class Overseer:
 
     def simulate_step(self):
         self.environment_instance.update_environment()
-        for organism in self.environment_instance.get_organisms:
+        for organism in self.environment_instance.get_organisms():
             organism.move(self.environment_instance)
         # call analysis function to update species
         # call display function to draw environment
