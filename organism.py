@@ -69,7 +69,7 @@ class Organism:
         '''Returns tuple of the x and y position of the organism'''
         return self.x_pos, self.y_pos
 
-    def set_pos(x_pos, y_pos):
+    def set_pos(self, x_pos, y_pos):
         '''Sets the organisms postion'''
         self.x_pos = x_pos
         self.y_pos = y_pos
