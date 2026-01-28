@@ -1,3 +1,8 @@
+'''
+This code was generated with the help of chatgpt.This transcript shows the interaction on setting up the visual pygame display. 
+https://chatgpt.com/share/69796b38-81fc-800d-93e0-1c6668b243cd
+'''
+
 import pygame
 from overseer import Overseer
 
