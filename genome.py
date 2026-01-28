@@ -26,7 +26,7 @@ class Genome:
         Returns:
             None. Updates self.genes
         '''
-        # determine which, if any, gene mutates witha mask
+        # determine which, if any, gene mutates with a mask
         mutate_mask = np.random.rand(len(self.genes)) < rate
         # adjust mutated genes based on normal distribution
         self.genes[mutate_mask] += np.random.normal(0, std_dev,
