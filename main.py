@@ -1,73 +1,85 @@
+'''
+This code was generated with the help of chatgpt.This transcript shows the interaction on setting up the visual pygame display. 
+https://chatgpt.com/share/69796b38-81fc-800d-93e0-1c6668b243cd
+'''
+
 import globals as gl
 import pygame
-import environment
+from overseer import Overseer
 
 
+SCREEN_WIDTH = 800  # Screen Width (Pixels)
+SCREEN_HEIGHT = 800  # Screen Height (Pixels)
+TILE_SIZE = 20  # Tile Size (Pixels)
+SIMULATION_SPEED = 10 # Update visual every number of these frames
+
+# Determine number of tiles 
+GRID_WIDTH = SCREEN_WIDTH // TILE_SIZE
+GRID_HEIGHT = SCREEN_HEIGHT // TILE_SIZE
+
+
+    
+def draw_environment(screen, env):
+    """Draws the food grid and organisms on Pygame"""
+
+    # Draw cell color based on food level
+    for x in range(env.width):
+        for y in range(env.height):
+            food = env.grid[x][y]["food"]
+            # black for cells without food
+            if food == 0:
+                color = (20,20,20)
+            # green intensity for food abundance
+            else:
+                intensity = int((food/10.0)*255) # scale between 0 and 255 for RGB
+                intensity = max(0, min(255, intensity)) # hard limit for valid RGB values in case of bad input
+                color = (0,intensity,0)
+            
+            # draw rectangles for grid
+            pygame.draw.rect(screen, color, (x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE))
+
+    # draw organism
+    for organism in env.get_organisms():
+        x_center = organism.x_pos * TILE_SIZE + TILE_SIZE//2
+        y_center = organism.y_pos * TILE_SIZE + TILE_SIZE//2
+        radius = TILE_SIZE//2-2
+        pygame.draw.circle(screen, organism.color, (x_center, y_center), radius)
+
+# initialize pygame
 pygame.init()
-screen = pygame.display.set_mode(gl.WINDOW_SIZE)
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pygame.time.Clock()
 
+# create overseer to manage simulation
+overseer = Overseer(GRID_WIDTH, GRID_HEIGHT)
 
-def draw_grid(screen):
-    for x in range(gl.GRID_WIDTH):
-        for y in range(gl.GRID_HEIGHT):
-            rect = pygame.Rect(
-                x * gl.CELL_SIZE,
-                y * gl.CELL_SIZE,
-                gl.CELL_SIZE,
-                gl.CELL_SIZE
-            )
-            pygame.draw.rect(screen, (128, 128, 128), rect, 1)
+# count how many frames for display updating
+frame_count = 0
+# boolean to check for pausing of simulation
+paused = False
 
+running = True
+while running:
+    clock.tick(60)
+    frame_count += 1
 
-def draw_energy(screen, env):
-    for x in range(gl.GRID_WIDTH):
-        for y in range(gl.GRID_HEIGHT):
-            if env.grid[x, y] == gl.ENERGY_CELL:
-                rect = pygame.Rect(
-                    x * gl.CELL_SIZE + 3,
-                    y * gl.CELL_SIZE + 3,
-                    gl.CELL_SIZE - 6,
-                    gl.CELL_SIZE - 6
-                )
-                pygame.draw.rect(screen, (0, 255, 0), rect)
+    # handle user input for simulation
+    for event in pygame.event.get():
 
+        # close window when x clicked
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE: # if space is pressed, toggle pause
+                paused = not paused
+            elif event.key == pygame.K_RETURN and paused: # if enter pressed while paused, iterate one step
+                overseer.simulate_step()
+    # update simulation when not paused
+    if frame_count % SIMULATION_SPEED == 0 and not paused:
+        overseer.simulate_step()
+    #draw the grid and organism
+    draw_environment(screen, overseer.environment_instance)
+    # pygame update display
+    pygame.display.flip()
 
-# Main Entry
-def main():
-    running = True
-    paused = True
-
-    env = environment.Environment(gl.GRID_WIDTH, gl.GRID_HEIGHT, 10)
-
-    while running:
-        clock.tick(gl.FPS)
-        pygame.display.set_caption(
-            gl.CAPTION_PAUSED if paused else gl.CAPTION_PLAY
-            )
-
-        for event in pygame.event.get():
-
-            if event.type == pygame.QUIT:
-                running = False
-
-            if event.type == pygame.KEYDOWN:
-                # Spacebar for Pause
-                if event.key == pygame.K_SPACE:
-                    paused = not paused
-
-                # "c" for clearing the screen, resetting
-                if event.key == pygame.K_c:
-                    paused = True
-                    # TODO: Add Restart conditions here
-
-        screen.fill((20, 20, 20))
-        draw_grid(screen)
-        draw_energy(screen, env)
-        pygame.display.update()
-
-    pygame.quit()  # Close Window
-
-
-if __name__ == "__main__":
-    main()
+pygame.quit()

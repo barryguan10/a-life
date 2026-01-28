@@ -24,62 +24,74 @@ class Organism:
         self.y_pos = y_pos
         self.heading = choice(['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'])
 
-        def decode(self, genome):
-            genes = genome.get_genes()
+    def decode(self, genome):
+        genes = genome.get_genes()
 
-            # using HSV for color so that minor changes in enes are color
-            # consistent, visually.
-            hue = genes[0] * 360
-            sat = genes[1]
-            val = 1
-            # keep speed between 0 and 10
-            speed = int((genes[2] * 10))
-            # based on speed, value between 1 and 5
-            metabolism = int(genes[2] * 5) + 1
-            # total starting energy when born
-            energy = int(genes[3] * 100)
+        # using HSV for color so that minor changes in enes are color
+        # consistent, visually.
+        hue = genes[0] * 360
+        sat = genes[1]
+        val = 1
+        # keep speed between 0 and 10
+        speed = int((genes[2] * 10))
+        # based on speed, value between 1 and 5
+        metabolism = int(genes[2] * 5) + 1
+        # total starting energy when born
+        energy = int(genes[3] * 100)
 
-            return {
-                "color": hsv_to_rgb(hue, sat, val),
-                "speed": speed,
-                "metabolism": metabolism,
-                "energy": energy
-            }
+        return {
+            "color": hsv_to_rgb(hue, sat, val),
+            "speed": speed,
+            "metabolism": metabolism,
+            "energy": energy
+        }
 
-        def get_energy(self):
-            """Method used to get the organisms current energy"""
-            return self.energy
+    def get_energy(self):
+        """Method used to get the organisms current energy"""
+        return self.energy
 
-        def adjust_energy(self, energy_gain: int):
-            """
-            Method used to update the organisms current energy by
-            energy_gain amount.
+    def adjust_energy(self, energy_gain: int):
+        """
+        Method used to update the organisms current energy by
+        energy_gain amount.
 
-            Args:
-                param1: energy_gain (int) represents how much to
-                add to the organisms current energy.
+        Args:
+            param1: energy_gain (int) represents how much to
+            add to the organisms current energy.
 
-            Returns:
-                Organisms updated energy total
-            """
-            self.energy = self.energy + energy_gain
-            return self.energy
+        Returns:
+            Organisms updated energy total
+        """
+        self.energy = self.energy + energy_gain
+        return self.energy
 
-        def get_pos(self):
-            '''Returns tuple of the x and y position of the organism'''
-            return x_pos, y_pos
+    def get_pos(self):
+        '''Returns tuple of the x and y position of the organism'''
+        return self.x_pos, self.y_pos
 
-        def set_pos(x_pos, y_pos):
-            '''Sets the organisms postion'''
-            self.x_pos = x_pos
-            self.y_pos = y_pos
+    def set_pos(self, x_pos, y_pos):
+        '''Sets the organisms postion'''
+        self.x_pos = x_pos
+        self.y_pos = y_pos
 
-        def get_heading(self):
-            """Returns the heading direction of the organism"""
-            return self.heading
+    def get_heading(self):
+        """Returns the heading direction of the organism"""
+        return self.heading
 
-        def set_heading(self, heading):
-            """Sets the organisms desired heading"""
-            options = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
-            if heading in options:
-                self.heading = heading
+    def set_heading(self, heading):
+        """Sets the organisms desired heading"""
+        options = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
+        if heading in options:
+            self.heading = heading
+
+    def move (self, env):
+        """Moves organism in a random direction"""
+        directions = [
+            (0,-1), (1,0), (0,1), (-1,0), (1,-1), (1,1), (-1,1), (-1,-1) 
+        ]
+        dx, dy = choice(directions)
+        new_x = max(0, min(env.width - 1, self.x_pos + dx))
+        new_y = max(0, min(env.height - 1, self.y_pos + dy))
+
+        self.x_pos = new_x
+        self.y_pos = new_y
