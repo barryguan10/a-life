@@ -29,9 +29,10 @@ class Organism:
 
         # using HSV for color so that minor changes in enes are color
         # consistent, visually.
-        hue = genes[0] * 360
-        sat = genes[1]
-        val = 1
+        hue = float(genes[0])
+        sat = float(genes[1])
+        val = 1.0
+        rgb = hsv_to_rgb(hue, sat, val)
         # keep speed between 0 and 10
         speed = int((genes[2] * 10))
         # based on speed, value between 1 and 5
@@ -40,7 +41,7 @@ class Organism:
         energy = int(genes[3] * 100)
 
         return {
-            "color": hsv_to_rgb(hue, sat, val),
+            "color": tuple([x * 255 for x in rgb]),
             "speed": speed,
             "metabolism": metabolism,
             "energy": energy
