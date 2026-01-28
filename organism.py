@@ -30,7 +30,7 @@ class Organism:
         # using HSV for color so that minor changes in enes are color
         # consistent, visually.
         hue = float(genes[0])
-        sat = float(genes[1])
+        sat = 1.0
         val = 1.0
         rgb = hsv_to_rgb(hue, sat, val)
         # keep speed between 0 and 10
