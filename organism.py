@@ -85,10 +85,11 @@ class Organism:
         if heading in options:
             self.heading = heading
 
-    def move (self, env):
+    def move(self, env):
         """Moves organism in a random direction"""
         directions = [
-            (0,-1), (1,0), (0,1), (-1,0), (1,-1), (1,1), (-1,1), (-1,-1) 
+            (0, -1), (1, 0), (0, 1), (-1, 0),
+            (1, -1), (1, 1), (-1, 1), (-1, -1)
         ]
         dx, dy = choice(directions)
         new_x = max(0, min(env.width - 1, self.x_pos + dx))
