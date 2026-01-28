@@ -3,6 +3,7 @@ This code was generated with the help of chatgpt.This transcript shows the inter
 https://chatgpt.com/share/69796b38-81fc-800d-93e0-1c6668b243cd
 '''
 
+import globals as gl
 import pygame
 from overseer import Overseer
 
