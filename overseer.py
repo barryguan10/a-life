@@ -1,7 +1,8 @@
 import environment
 
+
 class Overseer:
-    def __init__(self,width,height):
+    def __init__(self, width, height):
         self.environment_instance = environment.Environment(width, height)
 
     def new_simulator(self):

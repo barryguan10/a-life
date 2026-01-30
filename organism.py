@@ -29,18 +29,19 @@ class Organism:
 
         # using HSV for color so that minor changes in enes are color
         # consistent, visually.
-        hue = genes[0] * 360
-        sat = genes[1]
-        val = 1
+        hue = float(genes[0])
+        sat = 1.0
+        val = 1.0
+        rgb = hsv_to_rgb(hue, sat, val)
         # keep speed between 0 and 10
-        speed = int((genes[2] * 10))
+        speed = int((genes[1] * 10))
         # based on speed, value between 1 and 5
-        metabolism = int(genes[2] * 5) + 1
+        metabolism = int(genes[1] * 5) + 1
         # total starting energy when born
-        energy = int(genes[3] * 100)
+        energy = int(genes[2] * 100)
 
         return {
-            "color": hsv_to_rgb(hue, sat, val),
+            "color": tuple([x * 255 for x in rgb]),
             "speed": speed,
             "metabolism": metabolism,
             "energy": energy
@@ -84,10 +85,11 @@ class Organism:
         if heading in options:
             self.heading = heading
 
-    def move (self, env):
+    def move(self, env):
         """Moves organism in a random direction"""
         directions = [
-            (0,-1), (1,0), (0,1), (-1,0), (1,-1), (1,1), (-1,1), (-1,-1) 
+            (0, -1), (1, 0), (0, 1), (-1, 0),
+            (1, -1), (1, 1), (-1, 1), (-1, -1)
         ]
         dx, dy = choice(directions)
         new_x = max(0, min(env.width - 1, self.x_pos + dx))
