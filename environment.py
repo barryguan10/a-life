@@ -41,8 +41,24 @@ class Environment:
                 # each cell is a dictionary with amount of food, potentially
                 # add more data later
                 column.append({"food": food})
+                if food > 0:
+                    column[y]["occupancy"] = 1
+                else:
+                    column[y]["occupancy"] = 0
 
             self.grid.append(column)
+        self.place_organisms_grid()
+
+    def place_organisms_grid(self):
+        """
+        Docstring for place_organisms_grid
+
+        Uses the list of organisms to update the location of each organism on the grid
+        """
+        for organism in self.organisms:
+            pos_tuple = organism.get_pos()
+            self.grid[pos_tuple[0]][pos_tuple[1]]["occupancy"] = 2
+            print("organism added", self.grid[pos_tuple[0]][pos_tuple[1]])
 
     def create_new_environment(self):
         pass
@@ -59,6 +75,9 @@ class Environment:
                 self.grid[x][y]["food"] = max(0, min(MAX_FOOD,
                                                      self.grid[x][y]["food"] +
                                                      fluctuation))
+                if self.grid[x][y]["occupancy"] != 2:
+                    self.grid[x][y]["occupancy"] = 1 if self.grid[x][y]["food"] > 0 else 0
+        self.place_organisms_grid()
 
     def get_organisms(self):
         # returns lists of organisms in environment
