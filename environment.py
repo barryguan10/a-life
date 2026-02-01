@@ -127,7 +127,7 @@ class Environment:
             # it is to the positions
 
             if 0 <= new_x < self.width and 0 <= new_y < self.height:
-                if self.grid[new_x][new_y] != 0:
+                if self.grid[new_x][new_y]["occupancy"] != 0:
                     surr_items.append(
                         (
                             (new_x, new_y),
