@@ -29,6 +29,7 @@ class Organism:
         self.x_pos = x_pos
         self.y_pos = y_pos
         self.heading = choice(['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'])
+        self.actions = OMNI_ACTIONS
 
     def decode(self, genome):
         genes = genome.get_genes()
