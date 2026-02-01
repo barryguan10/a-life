@@ -137,3 +137,18 @@ class Environment:
                 )
 
         return surr_items
+    
+    def take_energy(self, organism: Organism):
+
+        # Get the energy in the square
+        pos_x = organism.x_pos
+        pos_y = organism.y_pos
+        energy_amount = self.grid[pos_x][pos_y]["food"]
+
+        self.grid[pos_x][pos_y]["food"] = 0
+
+        return energy_amount
+
+        
+
+        
