@@ -99,13 +99,18 @@ class Environment:
         surr_positions = [(-1,-1),(0,-1), (1,-1), (-1,0), (1,0)
                           ,(-1,1), (0,1), (1,1)]
         
+        surr_items = list()
         
+        for pos in surr_positions:
+            x_offset, y_offset = pos
+
+            # Check each spot in the grid to see there is an object there and if so add its location and what
+            # it is to the positions
+            if self.grid[org_x + x_offset][org_y+y_offset] != 0:
+                surr_items.append(((org_x + x_offset,org_y+y_offset),self.grid[org_x + x_offset][org_y+y_offset]))
 
 
-
-
-
-        return None
+        return surr_items
 
 
 
