@@ -2,7 +2,7 @@ import pygame
 
 class PyVisualization:
 
-    def __init__(self,screen_height,screen_width,tile_size):
+    def __init__(self, screen_height, screen_width, stile_size):
         pygame.init()
         self.screen_height = screen_height
         self.screen_width = screen_width
@@ -21,7 +21,8 @@ class PyVisualization:
     def draw_grid(self,positions = None): 
         '''
         Draws the positions of "Alive" cells
-        Argument: positions is a set of alive cells only (no need to look at every cell)
+        Argument: positions is a set of alive cells only (no need to look at
+          every cell)
         '''
         self.screen.fill(self.GREY)
 
