@@ -53,7 +53,8 @@ class Environment:
         """
         Docstring for place_organisms_grid
 
-        Uses the list of organisms to update the location of each organism on the grid
+        Uses the list of organisms to update the location of each organism on
+        the grid
         """
         for organism in self.organisms:
             pos_tuple = organism.get_pos()
@@ -76,7 +77,7 @@ class Environment:
                                                      self.grid[x][y]["food"] +
                                                      fluctuation))
                 if self.grid[x][y]["occupancy"] != 2:
-                    self.grid[x][y]["occupancy"] = 1 if self.grid[x][y]["food"] > 0 else 0
+                    self.grid[x][y]["occupancy"] = 1 if self.grid[x][y]["food"]> 0 else 0
         self.place_organisms_grid()
 
     def get_organisms(self):
