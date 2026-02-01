@@ -114,7 +114,7 @@ class Environment:
             (1, 1),
         ]
 
-        # surr_position = organism.get_sensing
+        # surr_position = organism.get_sensing can replace position
 
         surr_items = list()
 
