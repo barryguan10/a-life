@@ -114,6 +114,8 @@ class Environment:
             (1, 1),
         ]
 
+        # surr_position = organism.get_sensing
+
         surr_items = list()
 
         for pos in surr_positions:
@@ -127,12 +129,11 @@ class Environment:
             # it is to the positions
 
             if 0 <= new_x < self.width and 0 <= new_y < self.height:
-                if self.grid[new_x][new_y]["occupancy"] != 0:
-                    surr_items.append(
-                        (
-                            (new_x, new_y),
-                            self.grid[new_x][new_y],
-                        )
+                surr_items.append(
+                    (
+                        (new_x, new_y),
+                        self.grid[new_x][new_y]["occupancy"]
                     )
+                )
 
         return surr_items
