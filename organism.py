@@ -104,3 +104,46 @@ class Organism:
 
         self.x_pos = new_x
         self.y_pos = new_y
+
+    def choose_action(self, local_view):
+        """Takes a local view of an organisms surroundings and returns an
+        action the organism desires to take.
+
+        Args:
+            param1: local_view is a list of the surrounding grid_squares from
+            the enviornment thats elements are a dictionary whose key is a
+            tuple of the x and y coordinate of the grid cell and whose values
+            are a dictionary which has keys "occupancy" and "food".
+            Example Argument:
+            local_view = [
+                {(1, 1): {"occupancy": 0, "food": 0}},
+                {(1, 2): {"occupancy": 1, "food": 100}}
+                ]
+
+        Returns:
+            (x_pos, y_pos): tuple with two elements representing the grid cell
+            coordinates for the cell the creature desires to move to.
+
+            None: If there are no valid or prefered moves for the creature.
+
+            #TODO: In the future may ammend this to return a prioritized list
+            of actions, in order of preference for the creature.
+        """
+        energy_pos = []
+        unoccupied_pos = []
+
+        for element in local_view:
+            for pos in element:
+                # Priority 1: Energy
+                if element[pos]["occupancy"] == 1:
+                    energy_pos.append[pos]
+
+                # Final Priority: Random available direction
+                if element[pos]["occupancy"] == 0:
+                    unoccupied_pos.append[pos]
+
+        if len(energy_pos) > 0:
+            return choice[energy_pos]
+        if len(unoccupied_pos) > 0:
+            return choice[unoccupied_pos]
+        return None
