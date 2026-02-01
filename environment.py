@@ -83,3 +83,29 @@ class Environment:
     def get_organisms(self):
         # returns lists of organisms in environment
         return self.organisms
+    
+    def get_surroundings(self,organism: Organism):
+        """
+        A function to return the surroundings of an organism
+        
+        :param self: The environment instance
+        :param organism: The organism for the surroundings to be returned
+        """
+        #Get the current position of the organism
+        org_x, org_y = organism.get_pos()
+        
+        # Positions to check, can be replaced in the future with
+        # the organism's sight
+        surr_positions = [(-1,-1),(0,-1), (1,-1), (-1,0), (1,0)
+                          ,(-1,1), (0,1), (1,1)]
+        
+        
+
+
+
+
+
+        return None
+
+
+
