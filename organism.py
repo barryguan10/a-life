@@ -3,6 +3,12 @@ from colorsys import hsv_to_rgb
 from random import choice
 
 
+OMNI_ACTIONS = [
+            (0, -1), (1, 0), (0, 1), (-1, 0),
+            (1, -1), (1, 1), (-1, 1), (-1, -1)
+        ]
+
+
 class Organism:
     """Organism Class
     This class defines an organism. Each Organism has a Genome that defines
