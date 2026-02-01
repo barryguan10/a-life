@@ -110,14 +110,13 @@ class Organism:
         action the organism desires to take.
 
         Args:
-            param1: local_view is a list of the surrounding grid_squares from
-            the enviornment thats elements are a dictionary whose key is a
-            tuple of the x and y coordinate of the grid cell and whose values
-            are a dictionary which has keys "occupancy" and "food".
-            Example Argument:
+            param1: local_view is a list of tuples. Each tuple element has
+            two elements itself; the first is a tuple representing the grid
+            cell x, y coordinates and the second element is the occupancy
+            status of the cell. Example Argument:
             local_view = [
-                {(1, 1): {"occupancy": 0, "food": 0}},
-                {(1, 2): {"occupancy": 1, "food": 100}}
+                ((1, 1), 0),
+                ((1, 2), 1}
                 ]
 
         Returns:
@@ -133,14 +132,14 @@ class Organism:
         unoccupied_pos = []
 
         for element in local_view:
-            for pos in element:
-                # Priority 1: Energy
-                if element[pos]["occupancy"] == 1:
-                    energy_pos.append[pos]
+            pos, status = element
+            # Priority 1: Energy
+            if status == 1:
+                energy_pos.append[pos]
 
-                # Final Priority: Random available direction
-                if element[pos]["occupancy"] == 0:
-                    unoccupied_pos.append[pos]
+            # Final Priority: Random available direction
+            if status == 0:
+                unoccupied_pos.append[pos]
 
         if len(energy_pos) > 0:
             return choice[energy_pos]
