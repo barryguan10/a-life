@@ -119,15 +119,20 @@ class Environment:
         for pos in surr_positions:
             x_offset, y_offset = pos
 
+            new_x = org_x + x_offset
+            new_y = org_y + y_offset
+
             # Check each spot in the grid to see there is an object there and
             # if so add its location and what
             # it is to the positions
-            if self.grid[org_x + x_offset][org_y + y_offset] != 0:
-                surr_items.append(
-                    (
-                        (org_x + x_offset, org_y + y_offset),
-                        self.grid[org_x + x_offset][org_y + y_offset],
+
+            if 0 <= new_x < self.width and 0 <= new_y < self.height:
+                if self.grid[new_x][new_y] != 0:
+                    surr_items.append(
+                        (
+                            (new_x, new_y),
+                            self.grid[new_x][new_y],
+                        )
                     )
-                )
 
         return surr_items
