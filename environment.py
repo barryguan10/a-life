@@ -130,16 +130,22 @@ class Environment:
 
             if 0 <= new_x < self.width and 0 <= new_y < self.height:
                 surr_items.append(
-                    (
-                        (new_x, new_y),
-                        self.grid[new_x][new_y]["occupancy"]
-                    )
+                    ((new_x, new_y), self.grid[new_x][new_y]["occupancy"])
                 )
 
         return surr_items
-    
-    def take_energy(self, organism: Organism):
 
+    def take_energy(self, organism: Organism):
+        """
+        Docstring for take_energy
+        :param self: Environment
+        :param organism: Organism
+
+        returns energy level from the square the organism is on
+        """
+        # To discuss, may want to make this more open ended for
+        # combat and eating, each square may want to have a type
+        # and energy instead of food
         # Get the energy in the square
         pos_x = organism.x_pos
         pos_y = organism.y_pos
@@ -148,7 +154,3 @@ class Environment:
         self.grid[pos_x][pos_y]["food"] = 0
 
         return energy_amount
-
-        
-
-        
