@@ -135,14 +135,14 @@ class Organism:
             pos, status = element
             # Priority 1: Energy
             if status == 1:
-                energy_pos.append[pos]
+                energy_pos.append(pos)
 
             # Final Priority: Random available direction
             if status == 0:
-                unoccupied_pos.append[pos]
+                unoccupied_pos.append(pos)
 
         if len(energy_pos) > 0:
-            return choice[energy_pos]
+            return choice(energy_pos)
         if len(unoccupied_pos) > 0:
-            return choice[unoccupied_pos]
+            return choice(unoccupied_pos)
         return None
