@@ -132,7 +132,7 @@ class Environment:
         return energy_amount
 
     def resolve_moves(self):
-        """Add Docstring"""
+        """Handles Moves for all Creatures for each simulation step"""
         move_dict = {}
 
         for org in self.organisms:
