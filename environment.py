@@ -70,22 +70,9 @@ class Environment:
         pass
 
     def update_environment(self):
-        """
-        Docstring for update_environment
-
-        Updates environment in each step, currently fluctuates food amount only
-        """
-        for x in range(self.width):
-            for y in range(self.height):
-                fluctuation = random.uniform(-0.02, 0.02)
-                self.grid[x][y]["food"] = max(
-                    0, min(MAX_FOOD, self.grid[x][y]["food"] + fluctuation)
-                )
-                if self.grid[x][y]["occupancy"] != 2:
-                    self.grid[x][y]["occupancy"] = (
-                        1 if self.grid[x][y]["food"] > 0 else 0
-                    )
-        self.place_organisms_grid()
+        """Updates environment in each step"""
+        self.resolve_moves()
+        # TODO: Call Update and update_food method, once created. 
 
     def get_organisms(self):
         # returns lists of organisms in environment
