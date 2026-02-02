@@ -159,5 +159,8 @@ class Environment:
 
         for move, org in move_dict.items():
             new_x, new_y = move
+            old_x, old_y = org.get_pos()
+            self.grid[old_x][old_y]["occupancy"] = 0
             org.set_position(new_x, new_y)
             org.adjust_energy(self.take_energy(org))
+            self.grid[new_x][new_y]["occupancy"] = 2
