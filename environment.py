@@ -72,7 +72,7 @@ class Environment:
     def update_environment(self):
         """Updates environment in each step"""
         self.resolve_moves()
-        # TODO: Call Update and update_food method, once created. 
+        # TODO: Call Update and update_food method, once created.
 
     def get_organisms(self):
         # returns lists of organisms in environment
