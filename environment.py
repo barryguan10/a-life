@@ -103,18 +103,7 @@ class Environment:
 
         # Positions to check, can be replaced in the future with
         # the organism's sight
-        surr_positions = [
-            (-1, -1),
-            (0, -1),
-            (1, -1),
-            (-1, 0),
-            (1, 0),
-            (-1, 1),
-            (0, 1),
-            (1, 1),
-        ]
-
-        # surr_position = organism.get_sensing can replace position
+        surr_positions = organism.actions
 
         surr_items = list()
 
