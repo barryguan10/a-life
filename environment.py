@@ -154,3 +154,21 @@ class Environment:
         self.grid[pos_x][pos_y]["food"] = 0
 
         return energy_amount
+
+    def resolve_moves(self):
+        """Add Docstring"""
+        move_dict = {}
+
+        for org in self.organisms:
+            surroundings = self.get_surroundings(org)
+            move = org.choose_action(surroundings)
+
+            if move not in move_dict:
+                move_dict[move] = org
+            else:
+                pass  # TODO: Handle collisions in future
+
+        for move, org in move_dict.items():
+            new_x, new_y = move
+            org.set_position(new_x, new_y)
+            org.adjust_energy(self.take_energy(org))
