@@ -62,9 +62,9 @@ class Environment:
         the grid
         """
         for organism in self.organisms:
-            pos_tuple = organism.get_pos()
-            self.grid[pos_tuple[0]][pos_tuple[1]]["occupancy"] = 2
-            print("organism added", self.grid[pos_tuple[0]][pos_tuple[1]])
+            x, y = organism.get_pos()
+            self.grid[x][y]["occupancy"] = 2
+            print("organism added", self.grid[x][y])
 
     def create_new_environment(self):
         pass
