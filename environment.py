@@ -70,6 +70,12 @@ class Environment:
         self.grid[x][y]["occupancy"] = gl.ENERGY
         self.grid[x][y]["food"] = energy_val
 
+    def populate_food(self):
+        for x in range(self.width):
+            for y in range(self.height):
+                if random.random() < FOOD_PROBABILITY:
+                    self.add_food(x, y, MAX_FOOD)
+
     def place_organisms_grid(self):
         """
         Docstring for place_organisms_grid
