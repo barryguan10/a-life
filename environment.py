@@ -181,7 +181,8 @@ class Environment:
         for org in self.organisms:
             surroundings = self.get_surroundings(org)
             move = org.choose_action(surroundings)
-
+            if move is None:
+                continue
             if move not in move_dict:
                 move_dict[move] = org
             else:
