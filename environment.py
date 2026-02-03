@@ -71,6 +71,7 @@ class Environment:
         self.grid[x][y]["food"] = energy_val
 
     def populate_food(self):
+        """Populates the starting grid with food."""
         for x in range(self.width):
             for y in range(self.height):
                 if random.random() < FOOD_PROBABILITY:
