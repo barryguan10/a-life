@@ -86,7 +86,7 @@ class Environment:
             # Because organism location is not added to grid until
             # place_organisms_grid is called - two organisms could occupy
             # the same starting cell. Need to modify place_organisms_grid
-            # to place the currenly created organism in the grid, then call 
+            # to place the currenly created organism in the grid, then call
             # here.
             i += 1
             if i >= unique_count:
