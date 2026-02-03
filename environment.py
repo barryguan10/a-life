@@ -65,6 +65,11 @@ class Environment:
                 for _ in range(self.height)]
         return grid
 
+    def add_food(self, x, y, energy_val):
+        """Add food with an specified energy value at postion x, y in grid"""
+        self.grid[x][y]["occupancy"] = gl.ENERGY
+        self.grid[x][y]["food"] = energy_val
+
     def place_organisms_grid(self):
         """
         Docstring for place_organisms_grid
@@ -74,7 +79,7 @@ class Environment:
         """
         for organism in self.organisms:
             x, y = organism.get_pos()
-            self.grid[x][y]["occupancy"] = 2
+            self.grid[x][y]["occupancy"] = gl.CREATURE
             print("organism added", self.grid[x][y])
 
     def create_new_environment(self):
