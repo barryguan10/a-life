@@ -66,9 +66,9 @@ class Environment:
     def spawn_plant(self):
         # Spawn plant
         while True:
-            random_column = random.randint(0, self.width)
-            random_row = random.randint(0, self.height)
-            if self.grid[random_column][random_row]["occupancy"] == 2:
+            random_column = random.randint(0, self.width - 1)
+            random_row = random.randint(0, self.height - 1)
+            if self.grid[random_column][random_row]["occupancy"] == 0:
                 self.grid[random_column][random_row]["occupancy"] = 1
                 self.grid[random_column][random_row]["food"] = TARGET_FOOD
                 break
