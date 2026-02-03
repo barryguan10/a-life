@@ -1,11 +1,13 @@
 import random
 from organism import Organism
 import globals as gl
+import genome
 
-# Max food can be in a cell to stay within bounds of RGB color syntax
+# Max food is the maximum energy value a piece of food can have
 MAX_FOOD = 10
-TARGET_FOOD = 5  # Aim to fluctuate around the midpoint
 FOOD_PROBABILITY = 0.05  # Chance that a cell will start with food
+UNIQUE_STARTING_CREATURES = 2
+STARTING_POPULATION = 5
 
 
 class Environment:
@@ -20,43 +22,13 @@ class Environment:
         """
         self.width = width
         self.height = height
-
-        # list of the organisms in the environment
-        self.organisms = []
-
-        # create an organism at a random spot within the bounds of the grid
-        self.organisms.append(
-            Organism(
-                x_pos=random.randint(0, width - 1),
-                y_pos=random.randint(0, height - 1)
-            )
-        )
-
-        # initialize a 2d grid to represent environment
-        self.grid = []
-        for x in range(width):
-            column = []
-            for y in range(height):
-                # randomly seed some areas with higher starting concentration
-                # of food
-                if random.random() < FOOD_PROBABILITY:
-                    food = TARGET_FOOD
-                else:
-                    food = 0.0
-
-                # each cell is a dictionary with amount of food, potentially
-                # add more data later
-                column.append({"food": food})
-                if food > 0:
-                    column[y]["occupancy"] = gl.ENERGY
-                else:
-                    column[y]["occupancy"] = gl.UNOCCUPIED
-
-            self.grid.append(column)
-        self.place_organisms_grid()
+        self.grid = self.create_grid()
+        self.create_new_environment()
 
     def create_grid(self):
         """Initializes a grid structure"""
+        # uses list comprehension and formatted so additional dict keys
+        # can be added easily.
         grid = [[{
             "occupancy": gl.UNOCCUPIED,
             "food": 0
@@ -66,7 +38,7 @@ class Environment:
         return grid
 
     def add_food(self, x, y, energy_val):
-        """Add food with an specified energy value at postion x, y in grid"""
+        """Add food with a specified energy value at postion x, y in grid"""
         self.grid[x][y]["occupancy"] = gl.ENERGY
         self.grid[x][y]["food"] = energy_val
 
@@ -76,6 +48,50 @@ class Environment:
             for y in range(self.height):
                 if random.random() < FOOD_PROBABILITY:
                     self.add_food(x, y, MAX_FOOD)
+
+    def is_occupied(self, x, y):
+        """Returns true if grid location x, y is occupied"""
+        return self.grid[x][y]["occupancy"] != 0
+
+    def new_organism_list(self, population, unique_count=1):
+        """Creates a new list of organisms
+                Args:
+            param1: population (int)
+                    represents how many organisms to create
+            param2: unique_count (int)
+                    represents how many unique creatures
+
+        Returns: List of Organisms
+        """
+        # Make sure args are valid
+        if unique_count <= 0:
+            unique_count = 1
+        if population <= 0:
+            population = 1
+
+        # get genomes for starting creature types
+        unique_genomes = []
+        for _ in range(unique_count):
+            unique_genomes.append(genome.Genome())
+
+        organisms = []
+        i = 0  # used to iterate over unique_genomes, keeps species counts even
+        for _ in range(population):
+            occupied = True
+            while occupied:  # Could have infinite loop if grid full!!!!
+                x = random.randint(0, self.width-1)
+                y = random.randint(0, self.height-1)
+                occupied = self.is_occupied(x, y)
+            organisms.append(Organism(unique_genomes[i], x, y))
+            # Because organism location is not added to grid until
+            # place_organisms_grid is called - two organisms could occupy
+            # the same starting cell. Need to modify place_organisms_grid
+            # to place the currenly created organism in the grid, then call 
+            # here.
+            i += 1
+            if i >= unique_count:
+                i = 0
+        return organisms
 
     def place_organisms_grid(self):
         """
@@ -90,7 +106,11 @@ class Environment:
             print("organism added", self.grid[x][y])
 
     def create_new_environment(self):
-        pass
+        """Populates Grid with Food and Organisms"""
+        self.populate_food()
+        self.organisms = self.new_organism_list(STARTING_POPULATION,
+                                                UNIQUE_STARTING_CREATURES)
+        self.place_organisms_grid()
 
     def update_environment(self):
         """Updates environment in each step"""
