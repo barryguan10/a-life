@@ -64,7 +64,13 @@ class Environment:
 
     def spawn_plant(self):
         # Spawn plant
-
+        while(True):
+            random_column = random.randint(0, self.width)
+            random_row = random.randint(0, self.height)
+            if self.grid[random_column][random_row]["occupancy"] == 2:
+                self.grid[random_column][random_row]["occupancy"] = 1
+                self.grid[random_column][random_row]["food"] = TARGET_FOOD
+                break
         self.count_down_spawn_plant = None
 
     def set_spawn_plant_timer(self):
