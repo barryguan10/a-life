@@ -1,5 +1,6 @@
 import random
 from organism import Organism
+import globals as gl
 
 # Max food can be in a cell to stay within bounds of RGB color syntax
 MAX_FOOD = 10
@@ -47,9 +48,9 @@ class Environment:
                 # add more data later
                 column.append({"food": food})
                 if food > 0:
-                    column[y]["occupancy"] = 1
+                    column[y]["occupancy"] = gl.ENERGY
                 else:
-                    column[y]["occupancy"] = 0
+                    column[y]["occupancy"] = gl.UNOCCUPIED
 
             self.grid.append(column)
         self.place_organisms_grid()
@@ -57,7 +58,7 @@ class Environment:
     def create_grid(self):
         """Initializes a grid structure"""
         grid = [[{
-            "occupancy": 0,
+            "occupancy": gl.UNOCCUPIED,
             "food": 0
             }
             for _ in range(self.width)]
@@ -157,7 +158,7 @@ class Environment:
         for move, org in move_dict.items():
             new_x, new_y = move
             old_x, old_y = org.get_pos()
-            self.grid[old_x][old_y]["occupancy"] = 0
+            self.grid[old_x][old_y]["occupancy"] = gl.UNOCCUPIED
             org.set_pos(new_x, new_y)
             org.adjust_energy(self.take_energy(org))
-            self.grid[new_x][new_y]["occupancy"] = 2
+            self.grid[new_x][new_y]["occupancy"] = gl.CREATURE
