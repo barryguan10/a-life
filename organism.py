@@ -1,6 +1,7 @@
 from genome import Genome
 from colorsys import hsv_to_rgb
 from random import choice
+import globals as gl
 
 
 OMNI_ACTIONS = [
@@ -121,11 +122,11 @@ class Organism:
         for element in local_view:
             pos, status = element
             # Priority 1: Energy
-            if status == 1:
+            if status == gl.ENERGY:
                 energy_pos.append(pos)
 
             # Final Priority: Random available direction
-            if status == 0:
+            if status == gl.UNOCCUPIED:
                 unoccupied_pos.append(pos)
 
         if len(energy_pos) > 0:
