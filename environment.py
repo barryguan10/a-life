@@ -70,22 +70,9 @@ class Environment:
         pass
 
     def update_environment(self):
-        """
-        Docstring for update_environment
-
-        Updates environment in each step, currently fluctuates food amount only
-        """
-        for x in range(self.width):
-            for y in range(self.height):
-                fluctuation = random.uniform(-0.02, 0.02)
-                self.grid[x][y]["food"] = max(
-                    0, min(MAX_FOOD, self.grid[x][y]["food"] + fluctuation)
-                )
-                if self.grid[x][y]["occupancy"] != 2:
-                    self.grid[x][y]["occupancy"] = (
-                        1 if self.grid[x][y]["food"] > 0 else 0
-                    )
-        self.place_organisms_grid()
+        """Updates environment in each step"""
+        self.resolve_moves()
+        # TODO: Call Update and update_food method, once created.
 
     def get_organisms(self):
         # returns lists of organisms in environment
@@ -103,18 +90,7 @@ class Environment:
 
         # Positions to check, can be replaced in the future with
         # the organism's sight
-        surr_positions = [
-            (-1, -1),
-            (0, -1),
-            (1, -1),
-            (-1, 0),
-            (1, 0),
-            (-1, 1),
-            (0, 1),
-            (1, 1),
-        ]
-
-        # surr_position = organism.get_sensing can replace position
+        surr_positions = organism.actions
 
         surr_items = list()
 
@@ -154,3 +130,24 @@ class Environment:
         self.grid[pos_x][pos_y]["food"] = 0
 
         return energy_amount
+
+    def resolve_moves(self):
+        """Handles Moves for all Creatures for each simulation step"""
+        move_dict = {}
+
+        for org in self.organisms:
+            surroundings = self.get_surroundings(org)
+            move = org.choose_action(surroundings)
+
+            if move not in move_dict:
+                move_dict[move] = org
+            else:
+                pass  # TODO: Handle collisions in future
+
+        for move, org in move_dict.items():
+            new_x, new_y = move
+            old_x, old_y = org.get_pos()
+            self.grid[old_x][old_y]["occupancy"] = 0
+            org.set_pos(new_x, new_y)
+            org.adjust_energy(self.take_energy(org))
+            self.grid[new_x][new_y]["occupancy"] = 2

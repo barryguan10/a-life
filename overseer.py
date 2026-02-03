@@ -14,8 +14,6 @@ class Overseer:
 
     def simulate_step(self):
         self.environment_instance.update_environment()
-        for organism in self.environment_instance.get_organisms():
-            organism.move(self.environment_instance)
         # call analysis function to update species
         # call display function to draw environment
 

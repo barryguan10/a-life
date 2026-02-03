@@ -92,19 +92,6 @@ class Organism:
         if heading in options:
             self.heading = heading
 
-    def move(self, env):
-        """Moves organism in a random direction"""
-        directions = [
-            (0, -1), (1, 0), (0, 1), (-1, 0),
-            (1, -1), (1, 1), (-1, 1), (-1, -1)
-        ]
-        dx, dy = choice(directions)
-        new_x = max(0, min(env.width - 1, self.x_pos + dx))
-        new_y = max(0, min(env.height - 1, self.y_pos + dy))
-
-        self.x_pos = new_x
-        self.y_pos = new_y
-
     def choose_action(self, local_view):
         """Takes a local view of an organisms surroundings and returns an
         action the organism desires to take.
@@ -135,14 +122,14 @@ class Organism:
             pos, status = element
             # Priority 1: Energy
             if status == 1:
-                energy_pos.append[pos]
+                energy_pos.append(pos)
 
             # Final Priority: Random available direction
             if status == 0:
-                unoccupied_pos.append[pos]
+                unoccupied_pos.append(pos)
 
         if len(energy_pos) > 0:
-            return choice[energy_pos]
+            return choice(energy_pos)
         if len(unoccupied_pos) > 0:
-            return choice[unoccupied_pos]
+            return choice(unoccupied_pos)
         return None
