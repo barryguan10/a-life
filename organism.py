@@ -133,3 +133,10 @@ class Organism:
         if len(unoccupied_pos) > 0:
             return choice(unoccupied_pos)
         return None
+
+    def movement_cost(self):
+        """
+        Adds cost for moving
+        Scales cost of movement with the speed and metabolism
+        """
+        return max(1, int(self.metabolism*(1 + self.speed*0.2)))
