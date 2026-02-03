@@ -7,6 +7,7 @@ TARGET_FOOD = 5             # Aim to fluctuate around the midpoint
 FOOD_PROBABILITY = 0.05     # Chance that a cell will start with food
 SPAWN_PLANT_TIME = 10       # How long until a new plant gets placed on the board
 
+
 class Environment:
     """Represents the 2d grid the organisms exist in"""
     def __init__(self, width, height):
@@ -64,7 +65,7 @@ class Environment:
 
     def spawn_plant(self):
         # Spawn plant
-        while(True):
+        while True:
             random_column = random.randint(0, self.width)
             random_row = random.randint(0, self.height)
             if self.grid[random_column][random_row]["occupancy"] == 2:
