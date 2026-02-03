@@ -54,6 +54,16 @@ class Environment:
             self.grid.append(column)
         self.place_organisms_grid()
 
+    def create_grid(self):
+        """Initializes a grid structure"""
+        grid = [[{
+            "occupancy": 0,
+            "food": 0
+            }
+            for _ in range(self.width)]
+                for _ in range(self.height)]
+        return grid
+
     def place_organisms_grid(self):
         """
         Docstring for place_organisms_grid
