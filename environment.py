@@ -80,7 +80,7 @@ class Environment:
     def get_organisms(self):
         # returns lists of organisms in environment
         return self.organisms
-    
+
     def remove_dead_organisms(self):
         """
         Remove dead organisms if their energy goes below 0
@@ -93,7 +93,7 @@ class Environment:
             else:
                 x, y = org.get_pos()
                 self.grid[x][y]["occupancy"] = 0
-        
+
         self.organisms = alive_organisms
 
     def get_surroundings(self, organism: Organism):
