@@ -42,11 +42,11 @@ class Organism:
         val = 1.0
         rgb = hsv_to_rgb(hue, sat, val)
         # keep speed between 0 and 10
-        speed = int((genes[1] * 10))
-        # based on speed, value between 1 and 5
-        metabolism = int(genes[1] * 5) + 1
+        speed = int((genes[1] * 2 + 1))
+        # based on speed - Can update later to be genetic influenced
+        metabolism = speed
         # total starting energy when born
-        energy = int(genes[2] * 100)
+        energy = int(genes[2] * 10) + 100
 
         return {
             "color": tuple([x * 255 for x in rgb]),
