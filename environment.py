@@ -3,8 +3,9 @@ from organism import Organism
 
 # Max food can be in a cell to stay within bounds of RGB color syntax
 MAX_FOOD = 10
-TARGET_FOOD = 5  # Aim to fluctuate around the midpoint
-FOOD_PROBABILITY = 0.05  # Chance that a cell will start with food
+TARGET_FOOD = 5             # Aim to fluctuate around the midpoint
+FOOD_PROBABILITY = 0.05     # Chance that a cell will start with food
+SPAWN_PLANT_TIME = 10       # How long until a new plant gets placed on the board
 
 
 class Environment:
@@ -19,6 +20,8 @@ class Environment:
         """
         self.width = width
         self.height = height
+
+        self.count_down_spawn_plant = None
 
         # list of the organisms in the environment
         self.organisms = []
@@ -66,11 +69,47 @@ class Environment:
             self.grid[pos_tuple[0]][pos_tuple[1]]["occupancy"] = 2
             print("organism added", self.grid[pos_tuple[0]][pos_tuple[1]])
 
+    def spawn_plant(self):
+        # Spawn plant
+        while True:
+            random_column = random.randint(0, self.width - 1)
+            random_row = random.randint(0, self.height - 1)
+            if self.grid[random_column][random_row]["occupancy"] == 0:
+                self.grid[random_column][random_row]["occupancy"] = 1
+                self.grid[random_column][random_row]["food"] = TARGET_FOOD
+                break
+        self.count_down_spawn_plant = None
+
+    def set_spawn_plant_timer(self):
+        if self.count_down_spawn_plant is None:
+            self.count_down_spawn_plant = SPAWN_PLANT_TIME
+
+    def decrement_spawn_plant_timer(self):
+        if self.count_down_spawn_plant == 0:
+            self.spawn_plant()
+        elif self.count_down_spawn_plant is not None:
+            self.count_down_spawn_plant -= 1
+
     def create_new_environment(self):
         pass
 
     def update_environment(self):
-        """Updates environment in each step"""
+        """
+        Docstring for update_environment
+
+        Updates environment in each step, currently fluctuates food amount only,
+        Updates organisms in environment
+        """
+        for x in range(self.width):
+            for y in range(self.height):
+                fluctuation = random.uniform(-0.02, 0.02)
+                self.grid[x][y]["food"] = max(0, min(MAX_FOOD,
+                                                     self.grid[x][y]["food"] +
+                                                     fluctuation))
+                if self.grid[x][y]["occupancy"] != 2:
+                    self.grid[x][y]["occupancy"] = 1 if self.grid[x][y]["food"] > 0 else 0
+        self.place_organisms_grid()
+        self.decrement_spawn_plant_timer()
         for org in self.organisms:
             org.adjust_energy(-org.metabolism)
         self.resolve_moves()
