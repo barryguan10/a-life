@@ -140,4 +140,4 @@ class Organism:
         Adds cost for moving
         Scales cost of movement with the speed and metabolism
         """
-        return max(1, int(self.metabolism*(1 + self.speed*0.2)))
+        return self.metabolism + self.speed
