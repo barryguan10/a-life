@@ -15,9 +15,6 @@ CAPTION_PLAY = "A-Life Simulation: PLAYING"
 CAPTION_PAUSED = "A-Life Simulation: PAUSED"
 FPS = 60
 SIMULATION_SPEED = 10  # Update visual every number of these frames
-Unoccupied = 0
-Energy = 1
-Creature = 2
 
 
 def draw_environment(screen, env):
