@@ -72,8 +72,10 @@ def draw_environment(screen, env):
                            radius)
 
         font = pygame.font.SysFont(None, 14)
-        energy_text = font.render(str(int(organism.energy)), True, (20, 20, 20))
-        screen.blit(energy_text, (x_center - 6, y_center - 8))
+        energy_text = font.render(str(int(organism.energy)),
+                                  True, (20, 20, 20))
+        screen.blit(energy_text, (x_center - 6, y_center - 6))
+        # TODO: Adjust numbers postion based on length of number
 
 
 # initialize pygame
