@@ -4,10 +4,10 @@ import globals as gl
 import genome
 
 # Max food is the maximum energy value a piece of food can have
-MAX_FOOD = 10
+MAX_FOOD = 50
 TARGET_FOOD = 5  # Aim to fluctuate around the midpoint
-FOOD_PROBABILITY = 0.05  # Chance that a cell will start with food
-SPAWN_PLANT_TIME = 10    # How long until a new plant gets placed on the board
+FOOD_PROBABILITY = 0.15  # Chance that a cell will start with food
+SPAWN_PLANT_TIME = 5    # How long until a new plant gets placed on the board
 UNIQUE_STARTING_CREATURES = 2
 STARTING_POPULATION = 5
 
@@ -24,7 +24,6 @@ class Environment:
         """
         self.width = width
         self.height = height
-
         self.count_down_spawn_plant = SPAWN_PLANT_TIME
         self.grid = self.create_grid()
         self.create_new_environment()
@@ -82,7 +81,12 @@ class Environment:
         i = 0  # used to iterate over unique_genomes, keeps species counts even
         for _ in range(population):
             occupied = True
-            while occupied:  # Could have infinite loop if grid full!!!!
+            # TODO:The below loop could have infinite loop condition if grid is
+            # full. This is because it's trying to randomly find an open cell
+            # this also occurs in Nicole's spawn_plant method. We should
+            # consider making a set data structure for available unoccupied
+            # cells.
+            while occupied:
                 x = random.randint(0, self.width-1)
                 y = random.randint(0, self.height-1)
                 occupied = self.is_occupied(x, y)
@@ -107,11 +111,11 @@ class Environment:
         for organism in self.organisms:
             x, y = organism.get_pos()
             self.grid[x][y]["occupancy"] = gl.CREATURE
-            print("organism added", self.grid[x][y])
+            # print("organism added", self.grid[x][y])
 
     def spawn_plant(self):
         # Spawn plant
-        while True:
+        while True:  # TODO: See Justin's "To Do" note in new_organism_list
             random_x = random.randint(0, self.width - 1)
             random_y = random.randint(0, self.height - 1)
             if self.grid[random_x][random_y]["occupancy"] == gl.UNOCCUPIED:
