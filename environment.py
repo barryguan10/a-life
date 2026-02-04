@@ -25,7 +25,7 @@ class Environment:
         self.width = width
         self.height = height
 
-        self.count_down_spawn_plant = None
+        self.count_down_spawn_plant = SPAWN_PLANT_TIME
         self.grid = self.create_grid()
         self.create_new_environment()
 
@@ -142,6 +142,7 @@ class Environment:
     def update_environment(self):
         """Updates environment in each step"""
         self.place_organisms_grid()
+        self.set_spawn_plant_timer()
         self.decrement_spawn_plant_timer()
         for org in self.organisms:
             org.adjust_energy(-org.metabolism)
