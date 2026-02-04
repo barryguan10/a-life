@@ -71,12 +71,30 @@ class Environment:
 
     def update_environment(self):
         """Updates environment in each step"""
+        for org in self.organisms:
+            org.adjust_energy(-org.metabolism)
         self.resolve_moves()
+        self.remove_dead_organisms()
         # TODO: Call Update and update_food method, once created.
 
     def get_organisms(self):
         # returns lists of organisms in environment
         return self.organisms
+
+    def remove_dead_organisms(self):
+        """
+        Remove dead organisms if their energy goes below 0
+        """
+        alive_organisms = []
+
+        for org in self.organisms:
+            if org.get_energy() > 0:
+                alive_organisms.append(org)
+            else:
+                x, y = org.get_pos()
+                self.grid[x][y]["occupancy"] = 0
+
+        self.organisms = alive_organisms
 
     def get_surroundings(self, organism: Organism):
         """
@@ -136,6 +154,8 @@ class Environment:
         move_dict = {}
 
         for org in self.organisms:
+            if org.get_energy() <= 0:
+                continue
             surroundings = self.get_surroundings(org)
             move = org.choose_action(surroundings)
 
@@ -148,6 +168,7 @@ class Environment:
             new_x, new_y = move
             old_x, old_y = org.get_pos()
             self.grid[old_x][old_y]["occupancy"] = 0
+            org.adjust_energy(-org.movement_cost())
             org.set_pos(new_x, new_y)
             org.adjust_energy(self.take_energy(org))
             self.grid[new_x][new_y]["occupancy"] = 2
