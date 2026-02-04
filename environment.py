@@ -122,7 +122,9 @@ class Environment:
 
     def set_spawn_plant_timer(self):
         if self.count_down_spawn_plant is None:
-            self.count_down_spawn_plant = SPAWN_PLANT_TIME
+            new_timer = random.randint(int(SPAWN_PLANT_TIME * 0.3),
+                                       int(SPAWN_PLANT_TIME * 1.3))
+            self.count_down_spawn_plant = new_timer
 
     def decrement_spawn_plant_timer(self):
         if self.count_down_spawn_plant == 0:
