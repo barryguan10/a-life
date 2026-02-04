@@ -116,13 +116,13 @@ class Environment:
             random_y = random.randint(0, self.height - 1)
             if self.grid[random_x][random_y]["occupancy"] == gl.UNOCCUPIED:
                 self.grid[random_x][random_y]["occupancy"] = gl.ENERGY
-                self.grid[random_x][random_y]["food"] = TARGET_FOOD
+                self.grid[random_x][random_y]["food"] = MAX_FOOD
                 break
         self.count_down_spawn_plant = None
 
     def set_spawn_plant_timer(self):
         if self.count_down_spawn_plant is None:
-            new_timer = random.randint(int(SPAWN_PLANT_TIME * 0.3),
+            new_timer = random.randint(int(SPAWN_PLANT_TIME * 0.7),
                                        int(SPAWN_PLANT_TIME * 1.3))
             self.count_down_spawn_plant = new_timer
 
