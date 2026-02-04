@@ -3,6 +3,12 @@ from colorsys import hsv_to_rgb
 from random import choice
 
 
+OMNI_ACTIONS = [
+            (0, -1), (1, 0), (0, 1), (-1, 0),
+            (1, -1), (1, 1), (-1, 1), (-1, -1)
+        ]
+
+
 class Organism:
     """Organism Class
     This class defines an organism. Each Organism has a Genome that defines
@@ -23,6 +29,7 @@ class Organism:
         self.x_pos = x_pos
         self.y_pos = y_pos
         self.heading = choice(['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'])
+        self.actions = OMNI_ACTIONS
 
     def decode(self, genome):
         genes = genome.get_genes()
@@ -85,15 +92,51 @@ class Organism:
         if heading in options:
             self.heading = heading
 
-    def move(self, env):
-        """Moves organism in a random direction"""
-        directions = [
-            (0, -1), (1, 0), (0, 1), (-1, 0),
-            (1, -1), (1, 1), (-1, 1), (-1, -1)
-        ]
-        dx, dy = choice(directions)
-        new_x = max(0, min(env.width - 1, self.x_pos + dx))
-        new_y = max(0, min(env.height - 1, self.y_pos + dy))
+    def choose_action(self, local_view):
+        """Takes a local view of an organisms surroundings and returns an
+        action the organism desires to take.
 
-        self.x_pos = new_x
-        self.y_pos = new_y
+        Args:
+            param1: local_view is a list of tuples. Each tuple element has
+            two elements itself; the first is a tuple representing the grid
+            cell x, y coordinates and the second element is the occupancy
+            status of the cell. Example Argument:
+            local_view = [
+                ((1, 1), 0),
+                ((1, 2), 1}
+                ]
+
+        Returns:
+            (x_pos, y_pos): tuple with two elements representing the grid cell
+            coordinates for the cell the creature desires to move to.
+
+            None: If there are no valid or prefered moves for the creature.
+
+            #TODO: In the future may ammend this to return a prioritized list
+            of actions, in order of preference for the creature.
+        """
+        energy_pos = []
+        unoccupied_pos = []
+
+        for element in local_view:
+            pos, status = element
+            # Priority 1: Energy
+            if status == 1:
+                energy_pos.append(pos)
+
+            # Final Priority: Random available direction
+            if status == 0:
+                unoccupied_pos.append(pos)
+
+        if len(energy_pos) > 0:
+            return choice(energy_pos)
+        if len(unoccupied_pos) > 0:
+            return choice(unoccupied_pos)
+        return None
+
+    def movement_cost(self):
+        """
+        Adds cost for moving
+        Scales cost of movement with the speed and metabolism
+        """
+        return max(1, int(self.metabolism*(1 + self.speed*0.2)))
