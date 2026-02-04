@@ -71,7 +71,7 @@ def draw_environment(screen, env):
         font = pygame.font.SysFont(None, 14)
         energy_text = font.render(str(int(organism.energy)),
                                   True, (20, 20, 20))
-        screen.blit(energy_text, (x_center - 6, y_center - 6))
+        screen.blit(energy_text, (x_center - 8, y_center - 5))
         # TODO: Adjust numbers postion based on length of number
 
 
