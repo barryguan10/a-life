@@ -5,7 +5,9 @@ import genome
 
 # Max food is the maximum energy value a piece of food can have
 MAX_FOOD = 10
+TARGET_FOOD = 5  # Aim to fluctuate around the midpoint
 FOOD_PROBABILITY = 0.05  # Chance that a cell will start with food
+SPAWN_PLANT_TIME = 10    # How long until a new plant gets placed on the board
 UNIQUE_STARTING_CREATURES = 2
 STARTING_POPULATION = 5
 
@@ -22,6 +24,8 @@ class Environment:
         """
         self.width = width
         self.height = height
+
+        self.count_down_spawn_plant = None
         self.grid = self.create_grid()
         self.create_new_environment()
 
@@ -105,6 +109,27 @@ class Environment:
             self.grid[x][y]["occupancy"] = gl.CREATURE
             print("organism added", self.grid[x][y])
 
+    def spawn_plant(self):
+        # Spawn plant
+        while True:
+            random_x = random.randint(0, self.width - 1)
+            random_y = random.randint(0, self.height - 1)
+            if self.grid[random_x][random_y]["occupancy"] == gl.UNOCCUPIED:
+                self.grid[random_x][random_y]["occupancy"] = gl.ENERGY
+                self.grid[random_x][random_y]["food"] = TARGET_FOOD
+                break
+        self.count_down_spawn_plant = None
+
+    def set_spawn_plant_timer(self):
+        if self.count_down_spawn_plant is None:
+            self.count_down_spawn_plant = SPAWN_PLANT_TIME
+
+    def decrement_spawn_plant_timer(self):
+        if self.count_down_spawn_plant == 0:
+            self.spawn_plant()
+        elif self.count_down_spawn_plant is not None:
+            self.count_down_spawn_plant -= 1
+
     def create_new_environment(self):
         """Populates Grid with Food and Organisms"""
         self.populate_food()
@@ -114,12 +139,32 @@ class Environment:
 
     def update_environment(self):
         """Updates environment in each step"""
+        self.place_organisms_grid()
+        self.decrement_spawn_plant_timer()
+        for org in self.organisms:
+            org.adjust_energy(-org.metabolism)
         self.resolve_moves()
+        self.remove_dead_organisms()
         # TODO: Call Update and update_food method, once created.
 
     def get_organisms(self):
         # returns lists of organisms in environment
         return self.organisms
+
+    def remove_dead_organisms(self):
+        """
+        Remove dead organisms if their energy goes below 0
+        """
+        alive_organisms = []
+
+        for org in self.organisms:
+            if org.get_energy() > 0:
+                alive_organisms.append(org)
+            else:
+                x, y = org.get_pos()
+                self.grid[x][y]["occupancy"] = 0
+
+        self.organisms = alive_organisms
 
     def get_surroundings(self, organism: Organism):
         """
@@ -179,6 +224,8 @@ class Environment:
         move_dict = {}
 
         for org in self.organisms:
+            if org.get_energy() <= 0:
+                continue
             surroundings = self.get_surroundings(org)
             move = org.choose_action(surroundings)
             if move is None:
@@ -192,6 +239,7 @@ class Environment:
             new_x, new_y = move
             old_x, old_y = org.get_pos()
             self.grid[old_x][old_y]["occupancy"] = gl.UNOCCUPIED
+            org.adjust_energy(-org.movement_cost())
             org.set_pos(new_x, new_y)
             org.adjust_energy(self.take_energy(org))
             self.grid[new_x][new_y]["occupancy"] = gl.CREATURE
