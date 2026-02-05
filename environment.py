@@ -1,11 +1,15 @@
 import random
 from organism import Organism
+import globals as gl
+import genome
 
-# Max food can be in a cell to stay within bounds of RGB color syntax
-MAX_FOOD = 10
-TARGET_FOOD = 5             # Aim to fluctuate around the midpoint
-FOOD_PROBABILITY = 0.05     # Chance that a cell will start with food
-SPAWN_PLANT_TIME = 10       # How long until a new plant gets placed on the board
+# Max food is the maximum energy value a piece of food can have
+MAX_FOOD = 50
+TARGET_FOOD = 5  # Aim to fluctuate around the midpoint
+FOOD_PROBABILITY = 0.15  # Chance that a cell will start with food
+SPAWN_PLANT_TIME = 5    # How long until a new plant gets placed on the board
+UNIQUE_STARTING_CREATURES = 2
+STARTING_POPULATION = 5
 
 
 class Environment:
@@ -20,42 +24,82 @@ class Environment:
         """
         self.width = width
         self.height = height
+        self.count_down_spawn_plant = SPAWN_PLANT_TIME
+        self.grid = self.create_grid()
+        self.create_new_environment()
 
-        self.count_down_spawn_plant = None
+    def create_grid(self):
+        """Initializes a grid structure"""
+        # uses list comprehension and formatted so additional dict keys
+        # can be added easily.
+        grid = [[{
+            "occupancy": gl.UNOCCUPIED,
+            "food": 0
+            }
+            for _ in range(self.width)]
+                for _ in range(self.height)]
+        return grid
 
-        # list of the organisms in the environment
-        self.organisms = []
+    def add_food(self, x, y, energy_val):
+        """Add food with a specified energy value at postion x, y in grid"""
+        self.grid[x][y]["occupancy"] = gl.ENERGY
+        self.grid[x][y]["food"] = energy_val
 
-        # create an organism at a random spot within the bounds of the grid
-        self.organisms.append(
-            Organism(
-                x_pos=random.randint(0, width - 1),
-                y_pos=random.randint(0, height - 1)
-            )
-        )
-
-        # initialize a 2d grid to represent environment
-        self.grid = []
-        for x in range(width):
-            column = []
-            for y in range(height):
-                # randomly seed some areas with higher starting concentration
-                # of food
+    def populate_food(self):
+        """Populates the starting grid with food."""
+        for x in range(self.width):
+            for y in range(self.height):
                 if random.random() < FOOD_PROBABILITY:
-                    food = TARGET_FOOD
-                else:
-                    food = 0.0
+                    self.add_food(x, y, MAX_FOOD)
 
-                # each cell is a dictionary with amount of food, potentially
-                # add more data later
-                column.append({"food": food})
-                if food > 0:
-                    column[y]["occupancy"] = 1
-                else:
-                    column[y]["occupancy"] = 0
+    def is_occupied(self, x, y):
+        """Returns true if grid location x, y is occupied"""
+        return self.grid[x][y]["occupancy"] != 0
 
-            self.grid.append(column)
-        self.place_organisms_grid()
+    def new_organism_list(self, population, unique_count=1):
+        """Creates a new list of organisms
+                Args:
+            param1: population (int)
+                    represents how many organisms to create
+            param2: unique_count (int)
+                    represents how many unique creatures
+
+        Returns: List of Organisms
+        """
+        # Make sure args are valid
+        if unique_count <= 0:
+            unique_count = 1
+        if population <= 0:
+            population = 1
+
+        # get genomes for starting creature types
+        unique_genomes = []
+        for _ in range(unique_count):
+            unique_genomes.append(genome.Genome())
+
+        organisms = []
+        i = 0  # used to iterate over unique_genomes, keeps species counts even
+        for _ in range(population):
+            occupied = True
+            # TODO:The below loop could have infinite loop condition if grid is
+            # full. This is because it's trying to randomly find an open cell
+            # this also occurs in Nicole's spawn_plant method. We should
+            # consider making a set data structure for available unoccupied
+            # cells.
+            while occupied:
+                x = random.randint(0, self.width-1)
+                y = random.randint(0, self.height-1)
+                occupied = self.is_occupied(x, y)
+            organisms.append(Organism(unique_genomes[i], x, y))
+            # Because organism location is not added to grid until
+            # place_organisms_grid is called - two organisms could occupy
+            # the same starting cell. Need to modify place_organisms_grid
+            # to place the currenly created organism in the grid, then call
+            # here.
+            i += 1
+            if i >= unique_count:
+                i = 0
+        return organisms
 
     def place_organisms_grid(self):
         """
@@ -65,24 +109,26 @@ class Environment:
         the grid
         """
         for organism in self.organisms:
-            pos_tuple = organism.get_pos()
-            self.grid[pos_tuple[0]][pos_tuple[1]]["occupancy"] = 2
-            print("organism added", self.grid[pos_tuple[0]][pos_tuple[1]])
+            x, y = organism.get_pos()
+            self.grid[x][y]["occupancy"] = gl.CREATURE
+            # print("organism added", self.grid[x][y])
 
     def spawn_plant(self):
         # Spawn plant
-        while True:
-            random_column = random.randint(0, self.width - 1)
-            random_row = random.randint(0, self.height - 1)
-            if self.grid[random_column][random_row]["occupancy"] == 0:
-                self.grid[random_column][random_row]["occupancy"] = 1
-                self.grid[random_column][random_row]["food"] = TARGET_FOOD
+        while True:  # TODO: See Justin's "To Do" note in new_organism_list
+            random_x = random.randint(0, self.width - 1)
+            random_y = random.randint(0, self.height - 1)
+            if self.grid[random_x][random_y]["occupancy"] == gl.UNOCCUPIED:
+                self.grid[random_x][random_y]["occupancy"] = gl.ENERGY
+                self.grid[random_x][random_y]["food"] = MAX_FOOD
                 break
         self.count_down_spawn_plant = None
 
     def set_spawn_plant_timer(self):
         if self.count_down_spawn_plant is None:
-            self.count_down_spawn_plant = SPAWN_PLANT_TIME
+            new_timer = random.randint(int(SPAWN_PLANT_TIME * 0.7),
+                                       int(SPAWN_PLANT_TIME * 1.3))
+            self.count_down_spawn_plant = new_timer
 
     def decrement_spawn_plant_timer(self):
         if self.count_down_spawn_plant == 0:
@@ -91,24 +137,16 @@ class Environment:
             self.count_down_spawn_plant -= 1
 
     def create_new_environment(self):
-        pass
+        """Populates Grid with Food and Organisms"""
+        self.populate_food()
+        self.organisms = self.new_organism_list(STARTING_POPULATION,
+                                                UNIQUE_STARTING_CREATURES)
+        self.place_organisms_grid()
 
     def update_environment(self):
-        """
-        Docstring for update_environment
-
-        Updates environment in each step, currently fluctuates food amount only,
-        Updates organisms in environment
-        """
-        for x in range(self.width):
-            for y in range(self.height):
-                fluctuation = random.uniform(-0.02, 0.02)
-                self.grid[x][y]["food"] = max(0, min(MAX_FOOD,
-                                                     self.grid[x][y]["food"] +
-                                                     fluctuation))
-                if self.grid[x][y]["occupancy"] != 2:
-                    self.grid[x][y]["occupancy"] = 1 if self.grid[x][y]["food"] > 0 else 0
+        """Updates environment in each step"""
         self.place_organisms_grid()
+        self.set_spawn_plant_timer()
         self.decrement_spawn_plant_timer()
         for org in self.organisms:
             org.adjust_energy(-org.metabolism)
@@ -197,7 +235,8 @@ class Environment:
                 continue
             surroundings = self.get_surroundings(org)
             move = org.choose_action(surroundings)
-
+            if move is None:
+                continue
             if move not in move_dict:
                 move_dict[move] = org
             else:
@@ -206,8 +245,8 @@ class Environment:
         for move, org in move_dict.items():
             new_x, new_y = move
             old_x, old_y = org.get_pos()
-            self.grid[old_x][old_y]["occupancy"] = 0
+            self.grid[old_x][old_y]["occupancy"] = gl.UNOCCUPIED
             org.adjust_energy(-org.movement_cost())
             org.set_pos(new_x, new_y)
             org.adjust_energy(self.take_energy(org))
-            self.grid[new_x][new_y]["occupancy"] = 2
+            self.grid[new_x][new_y]["occupancy"] = gl.CREATURE

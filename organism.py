@@ -1,6 +1,7 @@
 from genome import Genome
 from colorsys import hsv_to_rgb
 from random import choice
+import globals as gl
 
 
 OMNI_ACTIONS = [
@@ -41,11 +42,11 @@ class Organism:
         val = 1.0
         rgb = hsv_to_rgb(hue, sat, val)
         # keep speed between 0 and 10
-        speed = int((genes[1] * 10))
-        # based on speed, value between 1 and 5
-        metabolism = int(genes[1] * 5) + 1
+        speed = int((genes[1] * 2 + 1))
+        # based on speed - Can update later to be genetic influenced
+        metabolism = speed
         # total starting energy when born
-        energy = int(genes[2] * 100)
+        energy = int(genes[2] * 10) + 100
 
         return {
             "color": tuple([x * 255 for x in rgb]),
@@ -121,11 +122,11 @@ class Organism:
         for element in local_view:
             pos, status = element
             # Priority 1: Energy
-            if status == 1:
+            if status == gl.ENERGY:
                 energy_pos.append(pos)
 
             # Final Priority: Random available direction
-            if status == 0:
+            if status == gl.UNOCCUPIED:
                 unoccupied_pos.append(pos)
 
         if len(energy_pos) > 0:
@@ -139,4 +140,4 @@ class Organism:
         Adds cost for moving
         Scales cost of movement with the speed and metabolism
         """
-        return max(1, int(self.metabolism*(1 + self.speed*0.2)))
+        return self.metabolism + self.speed
