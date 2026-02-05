@@ -16,7 +16,6 @@ class Organism:
 
     def __init__(self, genome=None, x_pos=0, y_pos=0):
         self.age = 0  # track timesteps alive for reproduction, but can be repurposed more generally
-        self.reproduction_age = 30
         self.genome = genome if genome is not None else Genome(None, 4)
         phenotype = self.decode(self.genome)
         self.color = phenotype["color"]
@@ -27,8 +26,9 @@ class Organism:
         self.y_pos = y_pos
         self.heading = choice(['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'])
         self.actions = gl.OMNI_ACTIONS
-        self.reproduction_energy_threshold = 100
-        self.reproduction_cost = 60
+        self.reproduction_age = phenotype["reproduction_age"]
+        self.reproduction_energy_threshold = phenotype["reproduction_energy_threshold"]
+        self.reproduction_energy_cost = phenotype["reproduction_energy_cost"]
 
     def decode(self, genome):
         genes = genome.get_genes()
@@ -45,12 +45,19 @@ class Organism:
         metabolism = speed
         # total starting energy when born
         energy = int(genes[2] * 10) + 100
-
+        # reproduction age for the organism
+        reproduction_age = int(genes[3] * 50) + 5
+        # reproduction energy threshold and cost
+        reproduction_energy_threshold = int(genes[4] * 200) + 100
+        reproduction_energy_cost = int(genes[4]*100) + 60
         return {
             "color": tuple([x * 255 for x in rgb]),
             "speed": speed,
             "metabolism": metabolism,
-            "energy": energy
+            "energy": energy,
+            "reproduction_age": reproduction_age,
+            "reproduction_energy_threshold": reproduction_energy_threshold,
+            "reproduction_energy_cost": reproduction_energy_cost
         }
 
     def get_energy(self):

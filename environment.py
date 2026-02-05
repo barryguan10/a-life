@@ -282,7 +282,7 @@ class Environment:
             child_x, child_y = random.choice(empty_spaces)
             child_genome = org.genome.copy_genes()
             child_genome.mutate(rate=0.05, std_dev=0.1)
-            org.adjust_energy(-org.reproduction_cost)
+            org.adjust_energy(-org.reproduction_energy_cost)
 
             child = Organism(genome=child_genome, x_pos=child_x, y_pos=child_y)
             new_organisms.append(child)
