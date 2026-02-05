@@ -4,11 +4,6 @@ from random import choice
 import globals as gl
 
 
-OMNI_ACTIONS = [
-            (0, -1), (1, 0), (0, 1), (-1, 0),
-            (1, -1), (1, 1), (-1, 1), (-1, -1)
-        ]
-
 
 class Organism:
     """Organism Class
@@ -21,6 +16,8 @@ class Organism:
     """
 
     def __init__(self, genome=None, x_pos=0, y_pos=0):
+        self.age = 0 # track timesteps alive for reproduction, but can be repurposed more generally
+        self.reproduction_age = 30
         self.genome = genome if genome is not None else Genome(None, 4)
         phenotype = self.decode(self.genome)
         self.color = phenotype["color"]
@@ -30,7 +27,9 @@ class Organism:
         self.x_pos = x_pos
         self.y_pos = y_pos
         self.heading = choice(['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'])
-        self.actions = OMNI_ACTIONS
+        self.actions = gl.OMNI_ACTIONS
+        self.reproduction_energy_threshold = 100
+        self.reproduction_cost = 60
 
     def decode(self, genome):
         genes = genome.get_genes()
@@ -141,3 +140,14 @@ class Organism:
         Scales cost of movement with the speed and metabolism
         """
         return self.metabolism + self.speed
+
+    def can_reproduce(self):
+        """
+        Returns True if organism meets conditions to reproduce
+        """
+        if self.age < self.reproduction_age:
+            return False
+        if self.energy < self.reproduction_energy_threshold:
+            return False
+        
+        return True

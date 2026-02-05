@@ -149,8 +149,10 @@ class Environment:
         self.set_spawn_plant_timer()
         self.decrement_spawn_plant_timer()
         for org in self.organisms:
+            org.age += 1 # increment every step to track age of organisms
             org.adjust_energy(-org.metabolism)
         self.resolve_moves()
+        self.resolve_reproduction()
         self.remove_dead_organisms()
         # TODO: Call Update and update_food method, once created.
 
@@ -250,3 +252,39 @@ class Environment:
             org.set_pos(new_x, new_y)
             org.adjust_energy(self.take_energy(org))
             self.grid[new_x][new_y]["occupancy"] = gl.CREATURE
+
+    def get_empty_adjacent_spaces(self, x, y):
+        empty_spaces = []
+
+        for dx, dy in gl.OMNI_ACTIONS:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < self.width and 0 <= ny < self.height:
+                if self.grid[nx][ny]["occupancy"] == gl.UNOCCUPIED:
+                    empty_spaces.append((nx,ny))
+        
+        return empty_spaces
+
+    def resolve_reproduction(self):
+        new_organisms = []
+
+        for org in self.organisms:
+            # Check if interna conditions to reproduce are met by organism
+            if not org.can_reproduce():
+                continue
+
+            x, y = org.get_pos()
+            empty_spaces = self.get_empty_adjacent_spaces(x, y)
+            # Check if there is any adjacent space to place new organism
+            if not empty_spaces:
+                continue
+
+            # Choose a random space from the empty adjacent spaces to spawn
+            child_x, child_y = random.choice(empty_spaces)
+            child_genome = org.genome.copy_genes()
+            child_genome.mutate(rate = 0.05, std_dev = 0.1)
+            org.adjust_energy(-org.reproduction_cost)
+
+            child = Organism(genome = child_genome, x_pos = child_x, y_pos = child_y)
+            new_organisms.append(child)
+        
+        self.organisms.extend(new_organisms)
