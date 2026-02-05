@@ -27,23 +27,34 @@ class Environment:
         self.count_down_spawn_plant = SPAWN_PLANT_TIME
         self.grid = self.create_grid()
         self.create_new_environment()
+        self.empty_places = set()
 
     def create_grid(self):
         """Initializes a grid structure"""
         # uses list comprehension and formatted so additional dict keys
         # can be added easily.
-        grid = [[{
-            "occupancy": gl.UNOCCUPIED,
-            "food": 0
-            }
-            for _ in range(self.width)]
-                for _ in range(self.height)]
+        grid = [[
+            (self.empty_places.append(x, y),
+                {
+                "occupancy": gl.UNOCCUPIED,
+                "food": 0
+            }[1])
+            for x in range(self.width)]
+                for y in range(self.height)]
         return grid
+
+    def toggle_empty_places(self, coordinates: tuple):
+        """Adjusts empty places list to account for changes in space status"""
+        if coordinates in self.empty_places:
+            self.empty_places.remove(coordinates)
+        else: 
+            self.empty_places.add(coordinates)
 
     def add_food(self, x, y, energy_val):
         """Add food with a specified energy value at postion x, y in grid"""
         self.grid[x][y]["occupancy"] = gl.ENERGY
         self.grid[x][y]["food"] = energy_val
+        self.toggle_empty_places((x,y))
 
     def populate_food(self):
         """Populates the starting grid with food."""
@@ -51,6 +62,7 @@ class Environment:
             for y in range(self.height):
                 if random.random() < FOOD_PROBABILITY:
                     self.add_food(x, y, MAX_FOOD)
+                    self.toggle_empty_places((x,y))
 
     def is_occupied(self, x, y):
         """Returns true if grid location x, y is occupied"""
@@ -111,6 +123,7 @@ class Environment:
         for organism in self.organisms:
             x, y = organism.get_pos()
             self.grid[x][y]["occupancy"] = gl.CREATURE
+            self.toggle_empty_places((x,y))
             # print("organism added", self.grid[x][y])
 
     def spawn_plant(self):
@@ -121,6 +134,7 @@ class Environment:
             if self.grid[random_x][random_y]["occupancy"] == gl.UNOCCUPIED:
                 self.grid[random_x][random_y]["occupancy"] = gl.ENERGY
                 self.grid[random_x][random_y]["food"] = MAX_FOOD
+                self.toggle_empty_places((random_x,random_y))
                 break
         self.count_down_spawn_plant = None
 
@@ -170,6 +184,8 @@ class Environment:
             else:
                 x, y = org.get_pos()
                 self.grid[x][y]["occupancy"] = 0
+                self.toggle_empty_places((x,y))
+                
 
         self.organisms = alive_organisms
 
@@ -246,7 +262,9 @@ class Environment:
             new_x, new_y = move
             old_x, old_y = org.get_pos()
             self.grid[old_x][old_y]["occupancy"] = gl.UNOCCUPIED
+            self.toggle_empty_places((old_x,old_y))
             org.adjust_energy(-org.movement_cost())
             org.set_pos(new_x, new_y)
             org.adjust_energy(self.take_energy(org))
             self.grid[new_x][new_y]["occupancy"] = gl.CREATURE
+            self.toggle_empty_places((new_x,new_y))
