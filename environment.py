@@ -151,6 +151,8 @@ class Environment:
         for org in self.organisms:
             org.age += 1  # increment every step to track age of organisms
             org.adjust_energy(-org.metabolism)
+            if org.reproduction_cooldown > 0:
+                org.reproduction_cooldown -= 1
         self.resolve_moves()
         self.resolve_reproduction()
         self.remove_dead_organisms()
@@ -268,7 +270,9 @@ class Environment:
         new_organisms = []
 
         for org in self.organisms:
-            # Check if interna conditions to reproduce are met by organism
+            # Check if internal conditions to reproduce are met by organism
+            if org.reproduction_cooldown > 0:
+                continue
             if not org.can_reproduce():
                 continue
 
@@ -286,5 +290,6 @@ class Environment:
 
             child = Organism(genome=child_genome, x_pos=child_x, y_pos=child_y)
             new_organisms.append(child)
+            org.reproduction_cooldown = org.reproduction_cooldown_length
 
         self.organisms.extend(new_organisms)

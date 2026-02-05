@@ -29,6 +29,8 @@ class Organism:
         self.reproduction_age = phenotype["reproduction_age"]
         self.reproduction_energy_threshold = phenotype["reproduction_energy_threshold"]
         self.reproduction_energy_cost = phenotype["reproduction_energy_cost"]
+        self.reproduction_cooldown = 0
+        self.reproduction_cooldown_length = 30
 
     def decode(self, genome):
         genes = genome.get_genes()
