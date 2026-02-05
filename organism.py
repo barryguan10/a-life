@@ -4,7 +4,6 @@ from random import choice
 import globals as gl
 
 
-
 class Organism:
     """Organism Class
     This class defines an organism. Each Organism has a Genome that defines
@@ -16,7 +15,7 @@ class Organism:
     """
 
     def __init__(self, genome=None, x_pos=0, y_pos=0):
-        self.age = 0 # track timesteps alive for reproduction, but can be repurposed more generally
+        self.age = 0  # track timesteps alive for reproduction, but can be repurposed more generally
         self.reproduction_age = 30
         self.genome = genome if genome is not None else Genome(None, 4)
         phenotype = self.decode(self.genome)
@@ -149,5 +148,5 @@ class Organism:
             return False
         if self.energy < self.reproduction_energy_threshold:
             return False
-        
+
         return True
