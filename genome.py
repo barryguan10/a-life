@@ -37,3 +37,9 @@ class Genome:
     def get_genes(self):
         '''Return genes for this genome'''
         return self.genes
+
+    def copy_genes(self):
+        """
+        Returns a copy of the genome for editing
+        """
+        return Genome(genes=self.genes.copy())
