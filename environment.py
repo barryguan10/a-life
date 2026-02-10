@@ -52,6 +52,20 @@ class Environment:
                 if random.random() < FOOD_PROBABILITY:
                     self.add_food(x, y, MAX_FOOD)
 
+    def populate_food_clustered(self, clusters=5, radius=3):
+        for _ in range(clusters):
+            cx = random.randint(0, self.width - 1)
+            cy = random.randint(0, self.height - 1)
+
+            for dx in range(-radius, radius + 1):
+                for dy in range(-radius, radius + 1):
+                    x = cx + dx
+                    y = cy + dy
+
+                    if 0 <= x < self.width and 0 <= y < self.height:
+                        if random.random() < 0.6:
+                            self.add_food(x, y, MAX_FOOD)
+
     def is_occupied(self, x, y):
         """Returns true if grid location x, y is occupied"""
         return self.grid[x][y]["occupancy"] != 0
@@ -138,7 +152,7 @@ class Environment:
 
     def create_new_environment(self):
         """Populates Grid with Food and Organisms"""
-        self.populate_food()
+        self.populate_food_clustered()
         self.organisms = self.new_organism_list(STARTING_POPULATION,
                                                 UNIQUE_STARTING_CREATURES)
         self.place_organisms_grid()
