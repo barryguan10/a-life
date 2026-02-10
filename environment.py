@@ -52,6 +52,13 @@ class Environment:
                 if random.random() < FOOD_PROBABILITY:
                     self.add_food(x, y, MAX_FOOD)
 
+    def grow_plants(self):
+        for x in range(self.width):
+            for y in range(self.height):
+                if self.grid[x][y]["occupancy"] == gl.ENERGY:
+                    if self.grid[x][y]["food"] < MAX_FOOD:
+                        self.grid[x][y]["food"] += 1
+
     def is_occupied(self, x, y):
         """Returns true if grid location x, y is occupied"""
         return self.grid[x][y]["occupancy"] != 0
@@ -120,7 +127,7 @@ class Environment:
             random_y = random.randint(0, self.height - 1)
             if self.grid[random_x][random_y]["occupancy"] == gl.UNOCCUPIED:
                 self.grid[random_x][random_y]["occupancy"] = gl.ENERGY
-                self.grid[random_x][random_y]["food"] = MAX_FOOD
+                self.grid[random_x][random_y]["food"] = 1
                 break
         self.count_down_spawn_plant = None
 
@@ -148,6 +155,7 @@ class Environment:
         self.place_organisms_grid()
         self.set_spawn_plant_timer()
         self.decrement_spawn_plant_timer()
+        self.grow_plants()
         for org in self.organisms:
             org.age += 1  # increment every step to track age of organisms
             org.adjust_energy(-org.metabolism)
