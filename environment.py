@@ -45,12 +45,20 @@ class Environment:
         self.grid[x][y]["occupancy"] = gl.ENERGY
         self.grid[x][y]["food"] = energy_val
 
-    def populate_food(self):
-        """Populates the starting grid with food."""
-        for x in range(self.width):
-            for y in range(self.height):
-                if random.random() < FOOD_PROBABILITY:
-                    self.add_food(x, y, MAX_FOOD)
+    def populate_food_clustered(self, clusters=5, radius=3):
+        """Add food initially in clusters"""
+        for _ in range(clusters):
+            cx = random.randint(0, self.width - 1)
+            cy = random.randint(0, self.height - 1)
+
+            for dx in range(-radius, radius + 1):
+                for dy in range(-radius, radius + 1):
+                    x = cx + dx
+                    y = cy + dy
+
+                    if 0 <= x < self.width and 0 <= y < self.height:
+                        if random.random() < 0.6:
+                            self.add_food(x, y, MAX_FOOD)
 
     def is_occupied(self, x, y):
         """Returns true if grid location x, y is occupied"""
@@ -138,7 +146,7 @@ class Environment:
 
     def create_new_environment(self):
         """Populates Grid with Food and Organisms"""
-        self.populate_food()
+        self.populate_food_clustered()
         self.organisms = self.new_organism_list(STARTING_POPULATION,
                                                 UNIQUE_STARTING_CREATURES)
         self.place_organisms_grid()
