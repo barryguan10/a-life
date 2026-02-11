@@ -45,14 +45,8 @@ class Environment:
         self.grid[x][y]["occupancy"] = gl.ENERGY
         self.grid[x][y]["food"] = energy_val
 
-    def populate_food(self):
-        """Populates the starting grid with food."""
-        for x in range(self.width):
-            for y in range(self.height):
-                if random.random() < FOOD_PROBABILITY:
-                    self.add_food(x, y, MAX_FOOD)
-
     def populate_food_clustered(self, clusters=5, radius=3):
+        """Add food initially in clusters"""
         for _ in range(clusters):
             cx = random.randint(0, self.width - 1)
             cy = random.randint(0, self.height - 1)
