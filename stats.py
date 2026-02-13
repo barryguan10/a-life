@@ -40,21 +40,23 @@ class Stats:
     def snapshot(self, time):
         """Method for gathering current data and logging the time"""
 
-        # Capture current amount of organisms alive 
+        # Capture current amount of organisms alive
         self.alive_over_time.append((time, self.curr_organism_alive_count))
 
-        if self.curr_organism_alive_count > 0: 
-            average_speed = self.curr_speed_sum / self.curr_organism_alive_count
+        if self.curr_organism_alive_count > 0:
+            alive = self.curr_organism_alive_count
+            average_speed = self.curr_speed_sum / alive
+
             self.average_speed_over_time.append((time, average_speed))
         else:
-            self.average_speed_over_time.append((time, 0)) 
+            self.average_speed_over_time.append((time, 0))
 
         self.plants_over_time.append((time, self.curr_plant_alive_count))
-    
+
     def get_organism_count(self):
         """Returns total count of organisms"""
         return self.organism_count
-    
+
     def get_plant_count(self):
         """Returns total count of plants"""
         return self.total_plants
