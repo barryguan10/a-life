@@ -4,12 +4,6 @@ from random import choice
 import globals as gl
 
 
-OMNI_ACTIONS = [
-            (0, -1), (1, 0), (0, 1), (-1, 0),
-            (1, -1), (1, 1), (-1, 1), (-1, -1)
-        ]
-
-
 class Organism:
     """Organism Class
     This class defines an organism. Each Organism has a Genome that defines
@@ -21,6 +15,7 @@ class Organism:
     """
 
     def __init__(self, genome=None, x_pos=0, y_pos=0):
+        self.age = 0  # track timesteps alive for reproduction, but can be repurposed more generally
         self.genome = genome if genome is not None else Genome(None, 4)
         phenotype = self.decode(self.genome)
         self.color = phenotype["color"]
@@ -30,7 +25,12 @@ class Organism:
         self.x_pos = x_pos
         self.y_pos = y_pos
         self.heading = choice(['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'])
-        self.actions = OMNI_ACTIONS
+        self.actions = gl.OMNI_ACTIONS
+        self.reproduction_age = phenotype["reproduction_age"]
+        self.reproduction_energy_threshold = phenotype["reproduction_energy_threshold"]
+        self.reproduction_energy_cost = phenotype["reproduction_energy_cost"]
+        self.reproduction_cooldown = 0
+        self.reproduction_cooldown_length = 30
 
     def decode(self, genome):
         genes = genome.get_genes()
@@ -47,12 +47,19 @@ class Organism:
         metabolism = speed
         # total starting energy when born
         energy = int(genes[2] * 10) + 100
-
+        # reproduction age for the organism
+        reproduction_age = int(genes[3] * 50) + 5
+        # reproduction energy threshold and cost
+        reproduction_energy_threshold = int(genes[4] * 200) + 100
+        reproduction_energy_cost = int(genes[4]*100) + 60
         return {
             "color": tuple([x * 255 for x in rgb]),
             "speed": speed,
             "metabolism": metabolism,
-            "energy": energy
+            "energy": energy,
+            "reproduction_age": reproduction_age,
+            "reproduction_energy_threshold": reproduction_energy_threshold,
+            "reproduction_energy_cost": reproduction_energy_cost
         }
 
     def get_energy(self):
@@ -141,3 +148,14 @@ class Organism:
         Scales cost of movement with the speed and metabolism
         """
         return self.metabolism + self.speed
+
+    def can_reproduce(self):
+        """
+        Returns True if organism meets conditions to reproduce
+        """
+        if self.age < self.reproduction_age:
+            return False
+        if self.energy < self.reproduction_energy_threshold:
+            return False
+
+        return True

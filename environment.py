@@ -58,13 +58,27 @@ class Environment:
         self.grid[x][y]["food"] = energy_val
         self.toggle_empty_places((x, y))
 
-    def populate_food(self):
-        """Populates the starting grid with food."""
+    def populate_food_clustered(self, clusters=5, radius=3):
+        """Add food initially in clusters"""
+        for _ in range(clusters):
+            cx = random.randint(0, self.width - 1)
+            cy = random.randint(0, self.height - 1)
+
+            for dx in range(-radius, radius + 1):
+                for dy in range(-radius, radius + 1):
+                    x = cx + dx
+                    y = cy + dy
+
+                    if 0 <= x < self.width and 0 <= y < self.height:
+                        if random.random() < 0.6:
+                            self.add_food(x, y, MAX_FOOD)
+
+    def grow_plants(self):
         for x in range(self.width):
             for y in range(self.height):
-                if random.random() < FOOD_PROBABILITY:
-                    self.add_food(x, y, MAX_FOOD)
-                    self.toggle_empty_places((x, y))
+                if self.grid[x][y]["occupancy"] == gl.ENERGY:
+                    if self.grid[x][y]["food"] < MAX_FOOD:
+                        self.grid[x][y]["food"] += 1
 
     def is_occupied(self, x, y):
         """Returns true if grid location x, y is occupied"""
@@ -135,7 +149,7 @@ class Environment:
             random_y = random.randint(0, self.height - 1)
             if self.grid[random_x][random_y]["occupancy"] == gl.UNOCCUPIED:
                 self.grid[random_x][random_y]["occupancy"] = gl.ENERGY
-                self.grid[random_x][random_y]["food"] = MAX_FOOD
+                self.grid[random_x][random_y]["food"] = 1
                 self.toggle_empty_places((random_x, random_y))
                 break
         self.count_down_spawn_plant = None
@@ -155,10 +169,9 @@ class Environment:
 
     def create_new_environment(self):
         """Populates Grid with Food and Organisms"""
-        self.populate_food()
-        self.organisms = self.new_organism_list(
-            STARTING_POPULATION, UNIQUE_STARTING_CREATURES
-        )
+        self.populate_food_clustered()
+        self.organisms = self.new_organism_list(STARTING_POPULATION,
+                                                UNIQUE_STARTING_CREATURES)
         self.place_organisms_grid()
 
     def update_environment(self):
@@ -166,9 +179,14 @@ class Environment:
         self.place_organisms_grid()
         self.set_spawn_plant_timer()
         self.decrement_spawn_plant_timer()
+        self.grow_plants()
         for org in self.organisms:
+            org.age += 1  # increment every step to track age of organisms
             org.adjust_energy(-org.metabolism)
+            if org.reproduction_cooldown > 0:
+                org.reproduction_cooldown -= 1
         self.resolve_moves()
+        self.resolve_reproduction()
         self.remove_dead_organisms()
         # TODO: Call Update and update_food method, once created.
 
@@ -271,3 +289,42 @@ class Environment:
             org.adjust_energy(self.take_energy(org))
             self.grid[new_x][new_y]["occupancy"] = gl.CREATURE
             self.toggle_empty_places((new_x, new_y))
+
+    def get_empty_adjacent_spaces(self, x, y):
+        empty_spaces = []
+
+        for dx, dy in gl.OMNI_ACTIONS:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < self.width and 0 <= ny < self.height:
+                if self.grid[nx][ny]["occupancy"] == gl.UNOCCUPIED:
+                    empty_spaces.append((nx, ny))
+
+        return empty_spaces
+
+    def resolve_reproduction(self):
+        new_organisms = []
+
+        for org in self.organisms:
+            # Check if internal conditions to reproduce are met by organism
+            if org.reproduction_cooldown > 0:
+                continue
+            if not org.can_reproduce():
+                continue
+
+            x, y = org.get_pos()
+            empty_spaces = self.get_empty_adjacent_spaces(x, y)
+            # Check if there is any adjacent space to place new organism
+            if not empty_spaces:
+                continue
+
+            # Choose a random space from the empty adjacent spaces to spawn
+            child_x, child_y = random.choice(empty_spaces)
+            child_genome = org.genome.copy_genes()
+            child_genome.mutate(rate=0.05, std_dev=0.1)
+            org.adjust_energy(-org.reproduction_energy_cost)
+
+            child = Organism(genome=child_genome, x_pos=child_x, y_pos=child_y)
+            new_organisms.append(child)
+            org.reproduction_cooldown = org.reproduction_cooldown_length
+
+        self.organisms.extend(new_organisms)
