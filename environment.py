@@ -36,7 +36,7 @@ class Environment:
         grid = [
             [
                 (
-                    self.empty_places.append(x, y),
+                    self.empty_places.add(x, y),
                     {"occupancy": gl.UNOCCUPIED, "food": 0}[1],
                 )
                 for x in range(self.width)
