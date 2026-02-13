@@ -25,9 +25,9 @@ class Environment:
         self.width = width
         self.height = height
         self.count_down_spawn_plant = SPAWN_PLANT_TIME
+        self.empty_places = set()
         self.grid = self.create_grid()
         self.create_new_environment()
-        self.empty_places = set()
 
     def create_grid(self):
         """Initializes a grid structure"""
