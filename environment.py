@@ -291,7 +291,7 @@ class Environment:
             if self.grid[new_x][new_y]["occupancy"] == gl.ENERGY:
                 self.toggle_empty_places((old_x, old_y))
             self.grid[new_x][new_y]["occupancy"] = gl.CREATURE
-            self.toggle_empty_places((old_x, old_y))           
+            self.toggle_empty_places((old_x, old_y))
 
     def get_empty_adjacent_spaces(self, x, y):
         empty_spaces = []
