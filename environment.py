@@ -7,7 +7,7 @@ import genome
 MAX_FOOD = 50
 TARGET_FOOD = 5  # Aim to fluctuate around the midpoint
 FOOD_PROBABILITY = 0.15  # Chance that a cell will start with food
-SPAWN_PLANT_TIME = 5    # How long until a new plant gets placed on the board
+SPAWN_PLANT_TIME = 5  # How long until a new plant gets placed on the board
 UNIQUE_STARTING_CREATURES = 2
 STARTING_POPULATION = 5
 
@@ -25,6 +25,7 @@ class Environment:
         self.width = width
         self.height = height
         self.count_down_spawn_plant = SPAWN_PLANT_TIME
+        self.empty_places = set()
         self.grid = self.create_grid()
         self.create_new_environment()
 
@@ -32,18 +33,30 @@ class Environment:
         """Initializes a grid structure"""
         # uses list comprehension and formatted so additional dict keys
         # can be added easily.
-        grid = [[{
-            "occupancy": gl.UNOCCUPIED,
-            "food": 0
-            }
-            for _ in range(self.width)]
-                for _ in range(self.height)]
+        grid = [
+            [
+                (
+                    self.empty_places.add((x, y)),
+                    {"occupancy": gl.UNOCCUPIED, "food": 0}
+                )[1]
+                for x in range(self.width)
+            ]
+            for y in range(self.height)
+        ]
         return grid
+
+    def toggle_empty_places(self, coordinates: tuple):
+        """Adjusts empty places list to account for changes in space status"""
+        if coordinates in self.empty_places:
+            self.empty_places.remove(coordinates)
+        else:
+            self.empty_places.add(coordinates)
 
     def add_food(self, x, y, energy_val):
         """Add food with a specified energy value at postion x, y in grid"""
         self.grid[x][y]["occupancy"] = gl.ENERGY
         self.grid[x][y]["food"] = energy_val
+        self.toggle_empty_places((x, y))
 
     def populate_food_clustered(self, clusters=5, radius=3):
         """Add food initially in clusters"""
@@ -102,8 +115,8 @@ class Environment:
             # consider making a set data structure for available unoccupied
             # cells.
             while occupied:
-                x = random.randint(0, self.width-1)
-                y = random.randint(0, self.height-1)
+                x = random.randint(0, self.width - 1)
+                y = random.randint(0, self.height - 1)
                 occupied = self.is_occupied(x, y)
             organisms.append(Organism(unique_genomes[i], x, y))
             # Because organism location is not added to grid until
@@ -126,6 +139,7 @@ class Environment:
         for organism in self.organisms:
             x, y = organism.get_pos()
             self.grid[x][y]["occupancy"] = gl.CREATURE
+            self.toggle_empty_places((x, y))
             # print("organism added", self.grid[x][y])
 
     def spawn_plant(self):
@@ -136,13 +150,15 @@ class Environment:
             if self.grid[random_x][random_y]["occupancy"] == gl.UNOCCUPIED:
                 self.grid[random_x][random_y]["occupancy"] = gl.ENERGY
                 self.grid[random_x][random_y]["food"] = 1
+                self.toggle_empty_places((random_x, random_y))
                 break
         self.count_down_spawn_plant = None
 
     def set_spawn_plant_timer(self):
         if self.count_down_spawn_plant is None:
-            new_timer = random.randint(int(SPAWN_PLANT_TIME * 0.7),
-                                       int(SPAWN_PLANT_TIME * 1.3))
+            new_timer = random.randint(
+                int(SPAWN_PLANT_TIME * 0.7), int(SPAWN_PLANT_TIME * 1.3)
+            )
             self.count_down_spawn_plant = new_timer
 
     def decrement_spawn_plant_timer(self):
@@ -190,6 +206,7 @@ class Environment:
             else:
                 x, y = org.get_pos()
                 self.grid[x][y]["occupancy"] = 0
+                self.toggle_empty_places((x, y))
 
         self.organisms = alive_organisms
 
@@ -266,10 +283,15 @@ class Environment:
             new_x, new_y = move
             old_x, old_y = org.get_pos()
             self.grid[old_x][old_y]["occupancy"] = gl.UNOCCUPIED
+            self.toggle_empty_places((old_x, old_y))
             org.adjust_energy(-org.movement_cost())
             org.set_pos(new_x, new_y)
             org.adjust_energy(self.take_energy(org))
+            # Checks if the cell was not empty before
+            if self.grid[new_x][new_y]["occupancy"] == gl.ENERGY:
+                self.toggle_empty_places((old_x, old_y))
             self.grid[new_x][new_y]["occupancy"] = gl.CREATURE
+            self.toggle_empty_places((old_x, old_y))
 
     def get_empty_adjacent_spaces(self, x, y):
         empty_spaces = []
