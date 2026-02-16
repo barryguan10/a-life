@@ -130,8 +130,11 @@ while running:
     draw_environment(sim_surface, overseer.environment_instance)
     main_screen.blit(sim_surface, (0, 0))
 
-    # draw buttons
+    mouse_pos = pygame.mouse.get_pos()
+
+    # Update button status and draw buttons
     for button in button_list:
+        button.update_hover(mouse_pos)
         button.draw(main_screen)
 
     # pygame update display
