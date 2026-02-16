@@ -121,6 +121,12 @@ while running:
             # if enter pressed while paused, iterate one step
             if event.key == pygame.K_RETURN and paused:
                 overseer.simulate_step()
+        elif pause_button.is_button_clicked(event):
+            paused = not paused
+            if paused:
+                pause_button.update_text("Play")
+            else:
+                pause_button.update_text("Pause")
 
     # update simulation when not paused
     if frame_count % SIMULATION_SPEED == 0 and not paused:
