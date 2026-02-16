@@ -11,6 +11,8 @@ GRID_WIDTH = 25
 GRID_HEIGHT = 25
 CELL_SIZE = 25
 WINDOW_SIZE = (GRID_WIDTH * CELL_SIZE, GRID_HEIGHT * CELL_SIZE)
+MAIN_WINDOW_SIZE = (GRID_WIDTH * CELL_SIZE + 200,
+                    GRID_HEIGHT * CELL_SIZE + 200)
 CAPTION_PLAY = "A-Life Simulation: PLAYING"
 CAPTION_PAUSED = "A-Life Simulation: PAUSED"
 FPS = 60
@@ -77,7 +79,8 @@ def draw_environment(screen, env):
 
 # initialize pygame
 pygame.init()
-screen = pygame.display.set_mode(WINDOW_SIZE)
+main_screen = pygame.display.set_mode(MAIN_WINDOW_SIZE)
+sim_surface = pygame.Surface(WINDOW_SIZE)
 clock = pygame.time.Clock()
 
 # create overseer to manage simulation
@@ -113,7 +116,8 @@ while running:
         overseer.simulate_step()
 
     # draw the grid and organism
-    draw_environment(screen, overseer.environment_instance)
+    draw_environment(sim_surface, overseer.environment_instance)
+    main_screen.blit(sim_surface, (0, 0))
 
     # pygame update display
     pygame.display.flip()
