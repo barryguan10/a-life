@@ -2,6 +2,7 @@ import pygame
 
 
 class Button:
+    """Class for Buttons that are clickable"""
     def __init__(self, rect, text):
         self.rect = pygame.Rect(rect)
         self.text = text
@@ -14,15 +15,39 @@ class Button:
         self.text_rect = self.text_surface.get_rect(center=self.rect.center)
 
     def draw(self, screen):
+        """Draws Button
+
+        Args:
+            param1: pygame screen to draw the button on
+
+        Returns:
+            None, draws button to screen
+        """
         pygame.draw.rect(screen, self.color, self.rect)
         screen.blit(self.text_surface, self.text_rect)
 
     def update_text(self, text):
+        """Update Button text
+
+        Args:
+            param1: text (string), represents the new text for the button
+
+        Returns:
+            None
+        """
         self.text = text
         self.text_surface = self.font.render(self.text, True, self.text_color)
         self.text_rect = self.text_surface.get_rect(center=self.rect.center)
 
     def update_hover(self, mouse_pos):
+        """Changes the button color if mouse is positioned on button
+
+        Args:
+            param1: mouse_pos (tuple) - x, y coordinates of the mouse
+
+        Returns:
+            None
+        """
         if self.rect.collidepoint(mouse_pos):
             self.color = self.hover_color
         else:
