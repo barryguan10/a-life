@@ -6,11 +6,14 @@ https://chatgpt.com/share/69796b38-81fc-800d-93e0-1c6668b243cd
 
 import pygame
 from overseer import Overseer
+from buttons import Button
 
 GRID_WIDTH = 25
 GRID_HEIGHT = 25
 CELL_SIZE = 25
 WINDOW_SIZE = (GRID_WIDTH * CELL_SIZE, GRID_HEIGHT * CELL_SIZE)
+MAIN_WINDOW_SIZE = (GRID_WIDTH * CELL_SIZE + 400,
+                    GRID_HEIGHT * CELL_SIZE + 100)
 CAPTION_PLAY = "A-Life Simulation: PLAYING"
 CAPTION_PAUSED = "A-Life Simulation: PAUSED"
 FPS = 60
@@ -77,7 +80,8 @@ def draw_environment(screen, env):
 
 # initialize pygame
 pygame.init()
-screen = pygame.display.set_mode(WINDOW_SIZE)
+main_screen = pygame.display.set_mode(MAIN_WINDOW_SIZE)
+sim_surface = pygame.Surface(WINDOW_SIZE)
 clock = pygame.time.Clock()
 
 # create overseer to manage simulation
@@ -89,6 +93,12 @@ frame_count = 0
 paused = True
 
 running = True
+
+# create buttons
+button_list = []
+pause_button = Button((25, 630, 100, 25), "Play" if paused else "Pause")
+button_list.append(pause_button)
+
 while running:
     clock.tick(60)
     frame_count += 1
@@ -104,16 +114,34 @@ while running:
             # if space is pressed, toggle pause
             if event.key == pygame.K_SPACE:
                 paused = not paused
-                # if enter pressed while paused, iterate one step
+                if paused:
+                    pause_button.update_text("Play")
+                else:
+                    pause_button.update_text("Pause")
+            # if enter pressed while paused, iterate one step
             if event.key == pygame.K_RETURN and paused:
                 overseer.simulate_step()
+        elif pause_button.is_button_clicked(event):
+            paused = not paused
+            if paused:
+                pause_button.update_text("Play")
+            else:
+                pause_button.update_text("Pause")
 
     # update simulation when not paused
     if frame_count % SIMULATION_SPEED == 0 and not paused:
         overseer.simulate_step()
 
     # draw the grid and organism
-    draw_environment(screen, overseer.environment_instance)
+    draw_environment(sim_surface, overseer.environment_instance)
+    main_screen.blit(sim_surface, (0, 0))
+
+    mouse_pos = pygame.mouse.get_pos()
+
+    # Update button status and draw buttons
+    for button in button_list:
+        button.update_hover(mouse_pos)
+        button.draw(main_screen)
 
     # pygame update display
     pygame.display.flip()
