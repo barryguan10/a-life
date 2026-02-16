@@ -6,6 +6,7 @@ https://chatgpt.com/share/69796b38-81fc-800d-93e0-1c6668b243cd
 
 import pygame
 from overseer import Overseer
+from buttons import Button
 
 GRID_WIDTH = 25
 GRID_HEIGHT = 25
@@ -97,6 +98,9 @@ while running:
     frame_count += 1
     pygame.display.set_caption(CAPTION_PAUSED if paused else CAPTION_PLAY)
 
+    # create buttons
+    pause_button = Button((25, 630, 100, 25), "pause")
+
     # handle user input for simulation
     for event in pygame.event.get():
 
@@ -118,6 +122,9 @@ while running:
     # draw the grid and organism
     draw_environment(sim_surface, overseer.environment_instance)
     main_screen.blit(sim_surface, (0, 0))
+
+    # draw buttons
+    pause_button.draw(main_screen)
 
     # pygame update display
     pygame.display.flip()
