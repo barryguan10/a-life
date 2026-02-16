@@ -7,6 +7,10 @@ class Button:
         self.text = text
         self.color = (255, 0, 0)
         self.text_color = (255, 255, 255)
+        self.font = pygame.font.SysFont(None, 25)
+        self.text_surface = self.font.render(self.text, True, self.text_color)
+        self.text_rect = self.text_surface.get_rect(center=self.rect.center)
 
     def draw(self, screen):
         pygame.draw.rect(screen, self.color, self.rect)
+        screen.blit(self.text_surface, self.text_rect)
