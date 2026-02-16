@@ -96,7 +96,7 @@ running = True
 
 # create buttons
 button_list = []
-pause_button = Button((25, 630, 100, 25), "Play" if paused else "Unpause")
+pause_button = Button((25, 630, 100, 25), "Play" if paused else "Pause")
 button_list.append(pause_button)
 
 while running:
