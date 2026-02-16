@@ -52,3 +52,17 @@ class Button:
             self.color = self.hover_color
         else:
             self.color = self.main_color
+
+    def is_button_clicked(self, event):
+        """Return True if Button is clicked, false otherwise
+
+        Args:
+            param1: event (pygame event)
+
+        Returns:
+            True if Button is clicked, False Otherwise
+        """
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            if self.rect.collidepoint(event.pos):
+                return True
+        return False
