@@ -14,3 +14,8 @@ class Button:
     def draw(self, screen):
         pygame.draw.rect(screen, self.color, self.rect)
         screen.blit(self.text_surface, self.text_rect)
+
+    def update_text(self, text):
+        self.text = text
+        self.text_surface = self.font.render(self.text, True, self.text_color)
+        self.text_rect = self.text_surface.get_rect(center=self.rect.center)
