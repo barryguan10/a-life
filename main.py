@@ -95,7 +95,7 @@ paused = True
 running = True
 
 # create buttons
-pause_button = Button((25, 630, 100, 25), "pause")
+pause_button = Button((25, 630, 100, 25), "pause" if paused else "unpause")
 
 while running:
     clock.tick(60)
@@ -112,7 +112,11 @@ while running:
             # if space is pressed, toggle pause
             if event.key == pygame.K_SPACE:
                 paused = not paused
-                # if enter pressed while paused, iterate one step
+                if paused:
+                    pause_button.update_text("Play")
+                else:
+                    pause_button.update_text("Pause")
+            # if enter pressed while paused, iterate one step
             if event.key == pygame.K_RETURN and paused:
                 overseer.simulate_step()
 
