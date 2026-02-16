@@ -95,7 +95,9 @@ paused = True
 running = True
 
 # create buttons
-pause_button = Button((25, 630, 100, 25), "pause" if paused else "unpause")
+button_list = []
+pause_button = Button((25, 630, 100, 25), "Play" if paused else "Unpause")
+button_list.append(pause_button)
 
 while running:
     clock.tick(60)
@@ -129,7 +131,8 @@ while running:
     main_screen.blit(sim_surface, (0, 0))
 
     # draw buttons
-    pause_button.draw(main_screen)
+    for button in button_list:
+        button.draw(main_screen)
 
     # pygame update display
     pygame.display.flip()
