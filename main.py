@@ -93,13 +93,14 @@ frame_count = 0
 paused = True
 
 running = True
+
+# create buttons
+pause_button = Button((25, 630, 100, 25), "pause")
+
 while running:
     clock.tick(60)
     frame_count += 1
     pygame.display.set_caption(CAPTION_PAUSED if paused else CAPTION_PLAY)
-
-    # create buttons
-    pause_button = Button((25, 630, 100, 25), "pause")
 
     # handle user input for simulation
     for event in pygame.event.get():
