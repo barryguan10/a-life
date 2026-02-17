@@ -164,7 +164,7 @@ class Organism:
 
     def genetic_comparison(self, other_organism):
         """
-        Compares difference between all elements of the organism's genome. 
+        Compares difference between all elements of the organism's genome.
         Potentially can revise in the future if we want to adjust how to assess similarities.
         """
         genome_1 = self.genome.get_genes()
@@ -191,7 +191,7 @@ class Organism:
 
                     if genetic_compatibility > 0.25:
                         return ("reproduce", organism_object)
-                
+
                 # Draft for predation, simple rule is if energy is greater and not reproducing
                 if self.energy > organism_object.energy * 10:
                     return ("attack", organism_object)

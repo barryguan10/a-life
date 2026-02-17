@@ -43,4 +43,3 @@ class Genome:
         Returns a copy of the genome for editing
         """
         return Genome(genes=self.genes.copy())
-

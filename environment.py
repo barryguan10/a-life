@@ -373,10 +373,10 @@ class Environment:
             if action == "reproduce":
                 child = self.resolve_sexual_reproduction(org, target_organism)
                 new_organisms.append(child)
-            
+
             elif action == "attack":
                 self.resolve_predation(org, target_organism)
-        
+
         self.organisms.extend(new_organisms)
 
     def resolve_sexual_reproduction(self, parent_1, parent_2):
@@ -412,7 +412,7 @@ class Environment:
         parent_2.reproduction_cooldown = parent_2.reproduction_cooldown_length
 
         return child
-    
+
     def resolve_predation(self, predator, prey):
         """
         Resolve interactions where one organism consumes another
