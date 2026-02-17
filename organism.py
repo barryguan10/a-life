@@ -127,7 +127,7 @@ class Organism:
         unoccupied_pos = []
 
         for element in local_view:
-            pos, status = element
+            pos, status, _ = element
             # Priority 1: Energy
             if status == gl.ENERGY:
                 energy_pos.append(pos)
@@ -157,5 +157,42 @@ class Organism:
             return False
         if self.energy < self.reproduction_energy_threshold:
             return False
+        if self.reproduction_cooldown > 0:
+            return False
 
         return True
+
+    def genetic_comparison(self, other_organism):
+        """
+        Compares difference between all elements of the organism's genome. 
+        Potentially can revise in the future if we want to adjust how to assess similarities.
+        """
+        genome_1 = self.genome.get_genes()
+        genome_2 = other_organism.genome.get_genes()
+
+        # Take absolute value of the difference between each element in the genome
+        difference = abs(genome_1-genome_2)
+
+        # The average difference will be between 0 and 1, with a higher value indicating higher difference
+        return 1 - difference.mean()
+
+    def choose_interaction(self, local_view):
+        """
+        If organism detects neighboring organism, decide interactions with that organism
+        """
+        for pos, status, organism_object in local_view:
+            if status == gl.CREATURE and organism_object is not None:
+                # avoids any interactions with itself
+                if organism_object is self:
+                    continue
+
+                if self.can_reproduce() and organism_object.can_reproduce():
+                    genetic_compatibility = self.genetic_comparison(organism_object)
+
+                    if genetic_compatibility > 0.25:
+                        return ("reproduce", organism_object)
+                
+                # Draft for predation, simple rule is if energy is greater and not reproducing
+                if self.energy > organism_object.energy * 10:
+                    return ("attack", organism_object)
+        return None
