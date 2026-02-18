@@ -132,6 +132,53 @@ button_list.extend([
 ])
 
 
+def handle_buttons(event, editable_parameters, overseer, button_list):
+    """Check all buttons for clicks and handle their actions"""
+    for button in button_list:
+        if button.is_button_clicked(event):
+            if button.text in ["Play", "Pause"]:
+                paused = button.text == "Play"
+                button.update_text("Pause" if paused else "Play")
+                return paused  # return the new paused state
+
+            elif button.text == "-":
+                # Determine which control this is (plant or org)
+                if button in [plant_minus]:
+                    editable_parameters.set_start_plants(
+                        editable_parameters.get_start_plants() - 1
+                    )
+                    plant_display.update_text(
+                        f"Plants: {editable_parameters.get_start_plants()}"
+                    )
+                elif button in [org_minus]:
+                    editable_parameters.set_start_organisms(
+                        editable_parameters.get_start_organisms() - 1
+                    )
+                    org_display.update_text(
+                        f"Orgs: {editable_parameters.get_start_organisms()}"
+                    )
+
+            elif button.text == "+":
+                if button in [plant_plus]:
+                    editable_parameters.set_start_plants(
+                        editable_parameters.get_start_plants() + 1
+                    )
+                    plant_display.update_text(
+                        f"Plants: {editable_parameters.get_start_plants()}"
+                    )
+                elif button in [org_plus]:
+                    editable_parameters.set_start_organisms(
+                        editable_parameters.get_start_organisms() + 1
+                    )
+                    org_display.update_text(
+                        f"Orgs: {editable_parameters.get_start_organisms()}"
+                    )
+
+            elif button.text == "Reset":
+                overseer.reset_simulation()
+    return None  # if paused state not changed
+
+
 while running:
     clock.tick(60)
     frame_count += 1
@@ -154,46 +201,46 @@ while running:
             # if enter pressed while paused, iterate one step
             if event.key == pygame.K_RETURN and paused:
                 overseer.simulate_step()
-        elif pause_button.is_button_clicked(event):
-            paused = not paused
-            if paused:
-                pause_button.update_text("Play")
-            else:
-                pause_button.update_text("Pause")
-        elif plant_plus.is_button_clicked(event):
-            editable_parameters.set_start_plants(
-                editable_parameters.get_start_plants() + 1
-            )
-            plant_display.update_text(
-                f"Plants: {editable_parameters.get_start_plants()}"
-            )
-
-        elif plant_minus.is_button_clicked(event):
-            editable_parameters.set_start_plants(
-                editable_parameters.get_start_plants() - 1
-            )
-            plant_display.update_text(
-                f"Plants: {editable_parameters.get_start_plants()}"
-            )
-
-        elif org_plus.is_button_clicked(event):
-            editable_parameters.set_start_organisms(
-                editable_parameters.get_start_organisms() + 1
-            )
-            org_display.update_text(
-                f"Orgs: {editable_parameters.get_start_organisms()}"
-            )
-
-        elif org_minus.is_button_clicked(event):
-            editable_parameters.set_start_organisms(
-                editable_parameters.get_start_organisms() - 1
-            )
-            org_display.update_text(
-                f"Orgs: {editable_parameters.get_start_organisms()}"
-            )
-
-        elif reset_button.is_button_clicked(event):
-            overseer.reset_simulation()
+        # elif pause_button.is_button_clicked(event):
+        #     paused = not paused
+        #     if paused:
+        #         pause_button.update_text("Play")
+        #     else:
+        #         pause_button.update_text("Pause")
+        # elif plant_plus.is_button_clicked(event):
+        #     editable_parameters.set_start_plants(
+        #         editable_parameters.get_start_plants() + 1
+        #     )
+        #     plant_display.update_text(
+        #         f"Plants: {editable_parameters.get_start_plants()}"
+        #     )
+        # elif plant_minus.is_button_clicked(event):
+        #     editable_parameters.set_start_plants(
+        #         editable_parameters.get_start_plants() - 1
+        #     )
+        #     plant_display.update_text(
+        #         f"Plants: {editable_parameters.get_start_plants()}"
+        #     )
+        # elif org_plus.is_button_clicked(event):
+        #     editable_parameters.set_start_organisms(
+        #         editable_parameters.get_start_organisms() + 1
+        #     )
+        #     org_display.update_text(
+        #         f"Orgs: {editable_parameters.get_start_organisms()}"
+        #     )
+        # elif org_minus.is_button_clicked(event):
+        #     editable_parameters.set_start_organisms(
+        #         editable_parameters.get_start_organisms() - 1
+        #     )
+        #     org_display.update_text(
+        #         f"Orgs: {editable_parameters.get_start_organisms()}"
+        #     )
+        # elif reset_button.is_button_clicked(event):
+        #     overseer.reset_simulation()
+        else:
+            new_paused = handle_buttons(event, editable_parameters, overseer, button_list)
+            if new_paused is not None:
+                paused = new_paused
 
     # update simulation when not paused
     if frame_count % SIMULATION_SPEED == 0 and not paused:
