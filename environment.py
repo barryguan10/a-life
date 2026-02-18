@@ -2,6 +2,7 @@ import random
 from organism import Organism
 import globals as gl
 import genome
+import numpy as np
 
 # Max food is the maximum energy value a piece of food can have
 MAX_FOOD = 50
@@ -185,8 +186,9 @@ class Environment:
             org.adjust_energy(-org.metabolism)
             if org.reproduction_cooldown > 0:
                 org.reproduction_cooldown -= 1
+        self.resolve_organism_interactions()
         self.resolve_moves()
-        self.resolve_reproduction()
+        self.resolve_asexual_reproduction()
         self.remove_dead_organisms()
         # TODO: Call Update and update_food method, once created.
 
@@ -237,8 +239,18 @@ class Environment:
             # it is to the positions
 
             if 0 <= new_x < self.width and 0 <= new_y < self.height:
+                cell = self.grid[new_x][new_y]
+                occupancy = cell["occupancy"]
+                occupant_object = None
+
+                # Search the list of organisms for this organism so we can return instance of it
+                if occupancy == gl.CREATURE:
+                    for organism in self.organisms:
+                        if organism.get_pos() == (new_x, new_y):
+                            occupant_object = organism
+                            break
                 surr_items.append(
-                    ((new_x, new_y), self.grid[new_x][new_y]["occupancy"])
+                    ((new_x, new_y), self.grid[new_x][new_y]["occupancy"], occupant_object)
                 )
 
         return surr_items
@@ -304,13 +316,11 @@ class Environment:
 
         return empty_spaces
 
-    def resolve_reproduction(self):
+    def resolve_asexual_reproduction(self):
         new_organisms = []
 
         for org in self.organisms:
             # Check if internal conditions to reproduce are met by organism
-            if org.reproduction_cooldown > 0:
-                continue
             if not org.can_reproduce():
                 continue
 
@@ -327,7 +337,85 @@ class Environment:
             org.adjust_energy(-org.reproduction_energy_cost)
 
             child = Organism(genome=child_genome, x_pos=child_x, y_pos=child_y)
+            self.grid[child_x][child_y]["occupancy"] = gl.CREATURE
+            self.toggle_empty_places((child_x, child_y))
             new_organisms.append(child)
             org.reproduction_cooldown = org.reproduction_cooldown_length
 
         self.organisms.extend(new_organisms)
+
+    def resolve_organism_interactions(self):
+        """
+        resolves interactions between organisms
+        """
+        # a set to keep track of pairs that have already interacted, preventing repeats
+        resolved_pairs = set()
+        new_organisms = []
+
+        for org in self.organisms:
+            surroundings = self.get_surroundings(org)
+            interaction = org.choose_interaction(surroundings)
+            # return none if no organisms nearby to interact with
+            if interaction is None:
+                continue
+
+            # separate the action returned and the organism to interact with
+            action, target_organism = interaction
+
+            # id gets address of object, then it's sorted to prevent repeats
+            # then converted to a tuple so it can be stored in a set
+            pair = tuple(sorted([id(org), id(target_organism)]))
+            if pair in resolved_pairs:
+                continue
+
+            resolved_pairs.add(pair)
+
+            if action == "reproduce":
+                child = self.resolve_sexual_reproduction(org, target_organism)
+                new_organisms.append(child)
+
+            elif action == "attack":
+                self.resolve_predation(org, target_organism)
+
+        self.organisms.extend(new_organisms)
+
+    def resolve_sexual_reproduction(self, parent_1, parent_2):
+        """
+        Combines genomes from two parents to create a child
+        """
+
+        x, y = parent_1.get_pos()
+        empty_spaces = self.get_empty_adjacent_spaces(x, y)
+        # Check if there is any adjacent space to place new organism
+        if not empty_spaces:
+            return None
+
+        # Choose a random space from the empty adjacent spaces to spawn
+        child_x, child_y = random.choice(empty_spaces)
+
+        genome_1 = parent_1.genome.copy_genes()
+        genome_2 = parent_2.genome.copy_genes()
+
+        # splits genome into two parts and combines them into child genome
+        split = random.randint(1, len(genome_1.get_genes())-1)
+        child_genes = np.concatenate((genome_1.get_genes()[:split], genome_2.get_genes()[split:]))
+        child_genome = genome.Genome(child_genes)
+        child_genome.mutate(rate=0.05, std_dev=0.1)
+
+        parent_1.adjust_energy(-parent_1.reproduction_energy_cost)
+        parent_2.adjust_energy(-parent_2.reproduction_energy_cost)
+
+        child = Organism(genome=child_genome, x_pos=child_x, y_pos=child_y)
+        self.grid[child_x][child_y]["occupancy"] = gl.CREATURE
+        self.toggle_empty_places((child_x, child_y))
+        parent_1.reproduction_cooldown = parent_1.reproduction_cooldown_length
+        parent_2.reproduction_cooldown = parent_2.reproduction_cooldown_length
+
+        return child
+
+    def resolve_predation(self, predator, prey):
+        """
+        Resolve interactions where one organism consumes another
+        """
+        prey.adjust_energy(-prey.energy)
+        predator.adjust_energy(prey.energy)
