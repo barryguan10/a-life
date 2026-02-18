@@ -63,9 +63,10 @@ class Environment:
         self.grid[x][y]["food"] = energy_val
         self.toggle_empty_places((x, y))
 
-    def populate_food_clustered(self, start_plants, clusters=5, radius=3):
+    def populate_food_clustered(self, start_plants, radius=3):
         """Populate food in clusters using total start_plants count"""
         plants_added = 0
+        clusters = max(1, start_plants // 10)
         for _ in range(clusters):
             if plants_added >= start_plants:
                 break
