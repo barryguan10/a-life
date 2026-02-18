@@ -10,25 +10,29 @@ TARGET_FOOD = 5  # Aim to fluctuate around the midpoint
 FOOD_PROBABILITY = 0.15  # Chance that a cell will start with food
 SPAWN_PLANT_TIME = 5  # How long until a new plant gets placed on the board
 UNIQUE_STARTING_CREATURES = 2
-STARTING_POPULATION = 5
 
 
 class Environment:
     """Represents the 2d grid the organisms exist in"""
 
-    def __init__(self, width, height):
+    def __init__(self, width, height, start_plants, start_organisms):
         """
         Docstring for __init__
 
         :param width: integer representing number of horizontal tiles
         :param height: integer representing number of vertical tiles
+        :param start_plants: integer representing number of starting plants
+        :param start_organisms: integer representing number of starting organisms
         """
+        self.organisms = None
         self.width = width
         self.height = height
         self.count_down_spawn_plant = SPAWN_PLANT_TIME
         self.empty_places = set()
         self.grid = self.create_grid()
         self.create_new_environment()
+        self.start_plants = start_plants
+        self.start_organisms = start_organisms
 
     def create_grid(self):
         """Initializes a grid structure"""
@@ -59,20 +63,26 @@ class Environment:
         self.grid[x][y]["food"] = energy_val
         self.toggle_empty_places((x, y))
 
-    def populate_food_clustered(self, clusters=5, radius=3):
-        """Add food initially in clusters"""
+    def populate_food_clustered(self, start_plants, clusters=5, radius=3):
+        """Populate food in clusters using total start_plants count"""
+        plants_added = 0
         for _ in range(clusters):
+            if plants_added >= start_plants:
+                break
             cx = random.randint(0, self.width - 1)
             cy = random.randint(0, self.height - 1)
-
             for dx in range(-radius, radius + 1):
                 for dy in range(-radius, radius + 1):
+
+                    if plants_added >= start_plants:
+                        return
                     x = cx + dx
                     y = cy + dy
-
                     if 0 <= x < self.width and 0 <= y < self.height:
                         if random.random() < 0.6:
-                            self.add_food(x, y, MAX_FOOD)
+                            if self.grid[x][y]["food"] == 0:
+                                self.add_food(x, y, MAX_FOOD)
+                                plants_added += 1
 
     def grow_plants(self):
         for x in range(self.width):
@@ -171,7 +181,7 @@ class Environment:
     def create_new_environment(self):
         """Populates Grid with Food and Organisms"""
         self.populate_food_clustered()
-        self.organisms = self.new_organism_list(STARTING_POPULATION,
+        self.organisms = self.new_organism_list(self.start_organisms,
                                                 UNIQUE_STARTING_CREATURES)
         self.place_organisms_grid()
 
