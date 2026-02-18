@@ -30,9 +30,9 @@ class Environment:
         self.count_down_spawn_plant = SPAWN_PLANT_TIME
         self.empty_places = set()
         self.grid = self.create_grid()
-        self.create_new_environment()
         self.start_plants = start_plants
         self.start_organisms = start_organisms
+        self.create_new_environment()
 
     def create_grid(self):
         """Initializes a grid structure"""
@@ -63,19 +63,19 @@ class Environment:
         self.grid[x][y]["food"] = energy_val
         self.toggle_empty_places((x, y))
 
-    def populate_food_clustered(self, start_plants, radius=3):
+    def populate_food_clustered(self, radius=3):
         """Populate food in clusters using total start_plants count"""
         plants_added = 0
-        clusters = max(1, start_plants // 10)
+        clusters = max(1, self.start_plants // 10)
         for _ in range(clusters):
-            if plants_added >= start_plants:
+            if plants_added >= self.start_plants:
                 break
             cx = random.randint(0, self.width - 1)
             cy = random.randint(0, self.height - 1)
             for dx in range(-radius, radius + 1):
                 for dy in range(-radius, radius + 1):
 
-                    if plants_added >= start_plants:
+                    if plants_added >= self.start_plants:
                         return
                     x = cx + dx
                     y = cy + dy

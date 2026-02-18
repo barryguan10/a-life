@@ -7,6 +7,7 @@ https://chatgpt.com/share/69796b38-81fc-800d-93e0-1c6668b243cd
 import pygame
 from overseer import Overseer
 from buttons import Button
+from editableParameters import EditableParameters
 
 GRID_WIDTH = 25
 GRID_HEIGHT = 25
@@ -85,7 +86,8 @@ sim_surface = pygame.Surface(WINDOW_SIZE)
 clock = pygame.time.Clock()
 
 # create overseer to manage simulation
-overseer = Overseer(GRID_WIDTH, GRID_HEIGHT)
+editable_parameters = EditableParameters()
+overseer = Overseer(GRID_WIDTH, GRID_HEIGHT, editable_parameters)
 
 # count how many frames for display updating
 frame_count = 0

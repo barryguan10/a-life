@@ -3,10 +3,10 @@ import editableParameters
 
 
 class Overseer:
-    def __init__(self, width, height):
+    def __init__(self, width, height, editable_parameters):
         self.width = width
         self.height = height
-        self.editable_parameters = editableParameters.EditableParameters()
+        self.editable_parameters = editable_parameters
 
         self.environment_instance = environment.Environment(
             width,
