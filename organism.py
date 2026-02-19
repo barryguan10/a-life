@@ -231,7 +231,7 @@ class Organism:
         y_pos = dictionary["y_pos"]
 
         # Creating the object
-        org = Organism(genome=genome, x_pos=x_pos, y_pos=y_pos)
+        org = class_type(genome=genome, x_pos=x_pos, y_pos=y_pos)
 
         # Setting attributes
         org.energy = dictionary["energy"]
