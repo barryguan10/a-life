@@ -207,6 +207,8 @@ class Environment:
         self.resolve_moves()
         self.resolve_asexual_reproduction()
         self.remove_dead_organisms()
+        self.iteration_count += 1
+        self.stats.snapshot(self.iteration_count)
         # TODO: Call Update and update_food method, once created.
 
     def get_organisms(self):
