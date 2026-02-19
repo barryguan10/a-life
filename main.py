@@ -172,7 +172,8 @@ def handle_total_population_button(event,
     if total_population_button.is_button_clicked(event):
         paused = True
         pause_button.update_text("Pause")
-        vis.graph_total_population(overseer.stats.get_alive_over_time())
+        vis.graph_total_population(
+            overseer.environment_instance.stats.get_alive_over_time())
     return paused
 
 
