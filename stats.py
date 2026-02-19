@@ -1,4 +1,3 @@
-# import matplotlib
 from organism import Organism
 
 
