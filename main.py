@@ -171,7 +171,9 @@ def handle_total_population_button(event,
                                    overseer):
     if total_population_button.is_button_clicked(event):
         paused = True
-        pause_button.update_text("Pause")
+        pause_button.update_text("Play")
+        pause_button.draw(main_screen)
+        pygame.display.flip()
         vis.graph_total_population(
             overseer.environment_instance.stats.get_alive_over_time())
     return paused
