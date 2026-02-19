@@ -16,7 +16,7 @@ class Organism:
 
     def __init__(self, genome=None, x_pos=0, y_pos=0):
         self.age = 0  # track timesteps alive for reproduction, but can be repurposed more generally
-        self.genome = genome if genome is not None else Genome(None, 6) #  I am not sure why this was 5 but it was causing index errors
+        self.genome = genome if genome is not None else Genome(None, 6)
         phenotype = self.decode(self.genome)
         self.color = phenotype["color"]
         self.speed = phenotype["speed"]

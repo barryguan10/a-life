@@ -165,6 +165,11 @@ def handle_reset_button(event, reset_button, overseer):
     if reset_button.is_button_clicked(event):
         overseer.reset_simulation()
 
+def handle_save_button(event, save_button, overseer):
+    pass
+
+def handle_load_button(event,load_button,overseer):
+    pass 
 
 while running:
     clock.tick(60)

@@ -1,4 +1,5 @@
 import environment
+import json
 
 
 class Overseer:
@@ -31,8 +32,12 @@ class Overseer:
         # call analysis function to update species
         # call display function to draw environment
 
-    def save(self):
-        pass
+    def save(self, filename="save.json"):
+        data = self.environment_instance.to_dictionary()
+        with open(filename, "w") as f:
+            json.dump(data, f)
 
-    def load(self):
-        pass
+    def load(self, filename="save.json"):
+        with open(filename, "r") as f:
+            data = json.load(f)
+        self.environment_instance = environment.Environment.from_dict(data)
