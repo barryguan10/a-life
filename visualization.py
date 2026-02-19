@@ -11,15 +11,16 @@ def graph_total_population(alive_over_time):
         None, displays graph of total population over time
     """
 
+    # Get independent times and total population lists from alive_over_time
     time, total_population = zip(*alive_over_time)
 
-    plt.figure()
+    plt.figure(num="Total Population Per Iteration")
     plt.plot(time, total_population)
 
     # Label axes and title
-    plt.xlabel("Time")
+    plt.xlabel("Iteration Number")
     plt.ylabel("Total Population")
-    plt.title("Total Population vs Time")
+    plt.title("Total Population per Iteration")
 
     # Add grid for readability
     plt.grid(True)
