@@ -3,6 +3,7 @@ from organism import Organism
 import globals as gl
 import genome
 import numpy as np
+import stats
 
 # Max food is the maximum energy value a piece of food can have
 MAX_FOOD = 50
@@ -33,6 +34,9 @@ class Environment:
         self.start_plants = start_plants
         self.start_organisms = start_organisms
         self.create_new_environment()
+        self.iteration_count = 0
+        self.stats = stats.Stats()
+        self.stats.snapshot(self.iteration_count)
 
     def create_grid(self):
         """Initializes a grid structure"""
@@ -184,6 +188,8 @@ class Environment:
         self.populate_food_clustered()
         self.organisms = self.new_organism_list(self.start_organisms,
                                                 UNIQUE_STARTING_CREATURES)
+        for org in self.organisms:
+            self.stats.tally_alive_organism(org)
         self.place_organisms_grid()
 
     def update_environment(self):
@@ -218,6 +224,7 @@ class Environment:
                 alive_organisms.append(org)
             else:
                 x, y = org.get_pos()
+                self.stats.tally_dead_organism(org)
                 self.grid[x][y]["occupancy"] = 0
                 self.toggle_empty_places((x, y))
 
@@ -351,6 +358,7 @@ class Environment:
             self.grid[child_x][child_y]["occupancy"] = gl.CREATURE
             self.toggle_empty_places((child_x, child_y))
             new_organisms.append(child)
+            self.stats.tally_alive_organism(child)
             org.reproduction_cooldown = org.reproduction_cooldown_length
 
         self.organisms.extend(new_organisms)
@@ -384,6 +392,7 @@ class Environment:
             if action == "reproduce":
                 child = self.resolve_sexual_reproduction(org, target_organism)
                 new_organisms.append(child)
+                self.stats.tally_alive_organism(child)
 
             elif action == "attack":
                 self.resolve_predation(org, target_organism)
