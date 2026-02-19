@@ -121,10 +121,17 @@ org_display = Button((240, 665, 120, 25),
 # --- Reset Button ---
 reset_button = Button((370, 630, 120, 25), "Reset")
 
+# --- Save Button ---
+save_button = Button((500, 630, 120, 25), "Save")
+
+# --- Load Button -- 
+load_button = Button((500, 665, 120, 25), "Load")
+
 button_list.extend([
     plant_minus, plant_plus, plant_display,
     org_minus, org_plus, org_display,
-    reset_button
+    reset_button, save_button, 
+    load_button
 ])
 
 
