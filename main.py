@@ -132,53 +132,6 @@ button_list.extend([
 ])
 
 
-def handle_buttons(event, editable_parameters, overseer, button_list):
-    """Check all buttons for clicks and handle their actions"""
-    for button in button_list:
-        if button.is_button_clicked(event):
-            if button.text in ["Play", "Pause"]:
-                paused = button.text == "Play"
-                button.update_text("Pause" if paused else "Play")
-                return paused  # return the new paused state
-
-            elif button.text == "-":
-                # Determine which control this is (plant or org)
-                if button in [plant_minus]:
-                    editable_parameters.set_start_plants(
-                        editable_parameters.get_start_plants() - 1
-                    )
-                    plant_display.update_text(
-                        f"Plants: {editable_parameters.get_start_plants()}"
-                    )
-                elif button in [org_minus]:
-                    editable_parameters.set_start_organisms(
-                        editable_parameters.get_start_organisms() - 1
-                    )
-                    org_display.update_text(
-                        f"Orgs: {editable_parameters.get_start_organisms()}"
-                    )
-
-            elif button.text == "+":
-                if button in [plant_plus]:
-                    editable_parameters.set_start_plants(
-                        editable_parameters.get_start_plants() + 1
-                    )
-                    plant_display.update_text(
-                        f"Plants: {editable_parameters.get_start_plants()}"
-                    )
-                elif button in [org_plus]:
-                    editable_parameters.set_start_organisms(
-                        editable_parameters.get_start_organisms() + 1
-                    )
-                    org_display.update_text(
-                        f"Orgs: {editable_parameters.get_start_organisms()}"
-                    )
-
-            elif button.text == "Reset":
-                overseer.reset_simulation()
-    return None  # if paused state not changed
-
-
 def handle_numeric_buttons(event, plus_button, minus_button, display_button, get_func, set_func, label):
     """Handle + and - buttons for a numeric parameter."""
     changed = False
