@@ -1,5 +1,4 @@
 import environment
-import stats
 
 
 class Overseer:
@@ -14,9 +13,6 @@ class Overseer:
             self.editable_parameters.get_start_plants(),
             self.editable_parameters.get_start_organisms()
         )
-
-        self.stats = stats.Stats()
-        self.iteration_count = 0
 
     def reset_simulation(self):
         self.environment_instance = environment.Environment(
@@ -34,8 +30,6 @@ class Overseer:
 
     def simulate_step(self):
         self.environment_instance.update_environment()
-        self.iteration_count += 1
-        self.stats.snapshot(self.iteration_count)
         # call analysis function to update species
         # call display function to draw environment
 
