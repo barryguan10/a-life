@@ -10,7 +10,7 @@ class Stats:
         self.total_plants = 0
         self.total_speed = 0
         self.curr_speed_sum = 0
-        self.curr_organism_alive_count += 0
+        self.curr_organism_alive_count = 0
         self.curr_plant_alive_count = 0
         self.alive_over_time = []
         self.plants_over_time = []
