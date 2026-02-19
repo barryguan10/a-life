@@ -21,8 +21,6 @@ class Overseer:
             self.editable_parameters.get_start_plants(),
             self.editable_parameters.get_start_organisms()
         )
-        self.stats = stats.Stats()
-        self.iteration_count = 0
 
     def run_simulation(self, number_of_steps):
         for i in range(number_of_steps):
