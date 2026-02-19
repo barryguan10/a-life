@@ -40,4 +40,4 @@ class Overseer:
     def load(self, filename="save.json"):
         with open(filename, "r") as f:
             data = json.load(f)
-        self.environment_instance = environment.Environment.from_dict(data)
+        self.environment_instance = environment.Environment.from_dictionary(data)
