@@ -23,7 +23,8 @@ class Environment:
         :param width: integer representing number of horizontal tiles
         :param height: integer representing number of vertical tiles
         :param start_plants: integer representing number of starting plants
-        :param start_organisms: integer representing number of starting organisms
+        :param start_organisms: integer representing number of starting
+        organisms
         """
         self.organisms = None
         self.width = width
@@ -31,11 +32,11 @@ class Environment:
         self.count_down_spawn_plant = SPAWN_PLANT_TIME
         self.empty_places = set()
         self.grid = self.create_grid()
+        self.stats = stats.Stats()
         self.start_plants = start_plants
         self.start_organisms = start_organisms
         self.create_new_environment()
         self.iteration_count = 0
-        self.stats = stats.Stats()
         self.stats.snapshot(self.iteration_count)
 
     def create_grid(self):
@@ -263,14 +264,17 @@ class Environment:
                 occupancy = cell["occupancy"]
                 occupant_object = None
 
-                # Search the list of organisms for this organism so we can return instance of it
+                # Search the list of organisms for this organism so we can
+                # return instance of it
                 if occupancy == gl.CREATURE:
                     for organism in self.organisms:
                         if organism.get_pos() == (new_x, new_y):
                             occupant_object = organism
                             break
                 surr_items.append(
-                    ((new_x, new_y), self.grid[new_x][new_y]["occupancy"], occupant_object)
+                    ((new_x, new_y),
+                     self.grid[new_x][new_y]["occupancy"],
+                     occupant_object)
                 )
 
         return surr_items
@@ -369,7 +373,8 @@ class Environment:
         """
         resolves interactions between organisms
         """
-        # a set to keep track of pairs that have already interacted, preventing repeats
+        # a set to keep track of pairs that have already interacted,
+        # preventing repeats
         resolved_pairs = set()
         new_organisms = []
 
@@ -420,7 +425,8 @@ class Environment:
 
         # splits genome into two parts and combines them into child genome
         split = random.randint(1, len(genome_1.get_genes())-1)
-        child_genes = np.concatenate((genome_1.get_genes()[:split], genome_2.get_genes()[split:]))
+        child_genes = np.concatenate((genome_1.get_genes()[:split],
+                                      genome_2.get_genes()[split:]))
         child_genome = genome.Genome(child_genes)
         child_genome.mutate(rate=0.05, std_dev=0.1)
 
