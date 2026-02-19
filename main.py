@@ -128,7 +128,8 @@ button_list.extend([
 ])
 
 
-def handle_numeric_buttons(event, plus_button, minus_button, display_button, get_func, set_func, label):
+def handle_numeric_buttons(event, plus_button, minus_button,
+                           display_button, get_func, set_func, label):
     """Handle + and - buttons for a numeric parameter."""
     changed = False
 
