@@ -59,4 +59,4 @@ class Genome:
         :param class_type: Genome class
         :param dictionary: Dictionary for the genome
         """
-        return (class_type(genes=np.array(dictionary['genes'],dtype=float)))
+        return (class_type(genes=np.array(dictionary['genes'], dtype=float)))

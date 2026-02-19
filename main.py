@@ -124,13 +124,13 @@ reset_button = Button((370, 630, 120, 25), "Reset")
 # --- Save Button ---
 save_button = Button((500, 630, 120, 25), "Save")
 
-# --- Load Button -- 
+# --- Load Button --
 load_button = Button((500, 665, 120, 25), "Load")
 
 button_list.extend([
     plant_minus, plant_plus, plant_display,
     org_minus, org_plus, org_display,
-    reset_button, save_button, 
+    reset_button, save_button,
     load_button
 ])
 
@@ -165,11 +165,16 @@ def handle_reset_button(event, reset_button, overseer):
     if reset_button.is_button_clicked(event):
         overseer.reset_simulation()
 
-def handle_save_button(event, save_button, overseer):
-    pass
 
-def handle_load_button(event,load_button,overseer):
-    pass 
+def handle_save_button(event, save_button, overseer):
+    if save_button.is_button_clicked(event):
+        overseer.save()
+
+
+def handle_load_button(event, load_button, overseer):
+    if load_button.is_button_clicked(event):
+        overseer.load()
+
 
 while running:
     clock.tick(60)
@@ -204,6 +209,9 @@ while running:
                                editable_parameters.set_start_organisms,
                                "Orgs")
         handle_reset_button(event, reset_button, overseer)
+
+        handle_save_button(event, save_button, overseer)
+        handle_load_button(event, load_button, overseer)
 
     # update simulation when not paused
     if frame_count % SIMULATION_SPEED == 0 and not paused:
