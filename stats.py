@@ -60,3 +60,7 @@ class Stats:
     def get_plant_count(self):
         """Returns total count of plants"""
         return self.total_plants
+
+    def get_alive_over_time(self):
+        """Returns list of tuples of time and alive organisms at that time"""
+        return self.alive_over_time
