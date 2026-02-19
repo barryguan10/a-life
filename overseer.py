@@ -35,6 +35,7 @@ class Overseer:
     def simulate_step(self):
         self.environment_instance.update_environment()
         self.iteration_count += 1
+        self.stats.snapshot(self.iteration_count)
         # call analysis function to update species
         # call display function to draw environment
 
