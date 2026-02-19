@@ -1,4 +1,5 @@
 import environment
+import stats
 
 
 class Overseer:
@@ -14,6 +15,8 @@ class Overseer:
             self.editable_parameters.get_start_organisms()
         )
 
+        self.stats = stats.Stats()
+
     def reset_simulation(self):
         self.environment_instance = environment.Environment(
             self.width,
@@ -21,6 +24,7 @@ class Overseer:
             self.editable_parameters.get_start_plants(),
             self.editable_parameters.get_start_organisms()
         )
+        self.stats = stats.Stats()
 
     def run_simulation(self, number_of_steps):
         for i in range(number_of_steps):
