@@ -179,6 +179,34 @@ def handle_buttons(event, editable_parameters, overseer, button_list):
     return None  # if paused state not changed
 
 
+def handle_numeric_buttons(event, plus_button, minus_button, display_button, get_func, set_func, label):
+    """Handle + and - buttons for a numeric parameter."""
+    changed = False
+
+    if plus_button.is_button_clicked(event):
+        set_func(get_func() + 1)
+        changed = True
+    elif minus_button.is_button_clicked(event):
+        set_func(get_func() - 1)
+        changed = True
+
+    if changed:
+        display_button.update_text(f"{label}: {get_func()}")
+
+
+def handle_pause_button(event, pause_button, paused):
+    """Toggle simulation pause/play."""
+    if pause_button.is_button_clicked(event):
+        paused = not paused
+        pause_button.update_text("Play" if paused else "Pause")
+    return paused
+
+
+def handle_reset_button(event, reset_button, overseer):
+    if reset_button.is_button_clicked(event):
+        overseer.reset_simulation()
+
+
 while running:
     clock.tick(60)
     frame_count += 1
@@ -201,6 +229,17 @@ while running:
             # if enter pressed while paused, iterate one step
             if event.key == pygame.K_RETURN and paused:
                 overseer.simulate_step()
+            # Button handling
+        paused = handle_pause_button(event, pause_button, paused)
+        handle_numeric_buttons(event, plant_plus, plant_minus, plant_display,
+                               editable_parameters.get_start_plants,
+                               editable_parameters.set_start_plants,
+                               "Plants")
+        handle_numeric_buttons(event, org_plus, org_minus, org_display,
+                               editable_parameters.get_start_organisms,
+                               editable_parameters.set_start_organisms,
+                               "Orgs")
+        handle_reset_button(event, reset_button, overseer)
         # elif pause_button.is_button_clicked(event):
         #     paused = not paused
         #     if paused:
@@ -237,10 +276,7 @@ while running:
         #     )
         # elif reset_button.is_button_clicked(event):
         #     overseer.reset_simulation()
-        else:
-            new_paused = handle_buttons(event, editable_parameters, overseer, button_list)
-            if new_paused is not None:
-                paused = new_paused
+
 
     # update simulation when not paused
     if frame_count % SIMULATION_SPEED == 0 and not paused:
