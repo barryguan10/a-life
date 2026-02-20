@@ -201,7 +201,7 @@ class Organism:
         """
         Generating a Dictionary of the Organism
 
-        :param self: an Organism Object 
+        :param self: an Organism Object
         """
 
         dictionary = {
