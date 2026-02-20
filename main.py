@@ -8,6 +8,7 @@ import pygame
 from overseer import Overseer
 from buttons import Button
 from editableParameters import EditableParameters
+import visualization as vis
 
 GRID_WIDTH = 25
 GRID_HEIGHT = 25
@@ -121,14 +122,18 @@ org_display = Button((240, 665, 120, 25),
 # --- Reset Button ---
 reset_button = Button((370, 630, 120, 25), "Reset")
 
+# --- View Total Population Button ---
+total_population_button = Button((630, 10, 200, 25), "View Total Population")
+
 button_list.extend([
     plant_minus, plant_plus, plant_display,
     org_minus, org_plus, org_display,
-    reset_button
+    reset_button, total_population_button
 ])
 
 
-def handle_numeric_buttons(event, plus_button, minus_button, display_button, get_func, set_func, label):
+def handle_numeric_buttons(event, plus_button, minus_button,
+                           display_button, get_func, set_func, label):
     """Handle + and - buttons for a numeric parameter."""
     changed = False
 
@@ -157,6 +162,21 @@ def handle_pause_button(event, pause_button, paused):
 def handle_reset_button(event, reset_button, overseer):
     if reset_button.is_button_clicked(event):
         overseer.reset_simulation()
+
+
+def handle_total_population_button(event,
+                                   total_population_button,
+                                   pause_button,
+                                   paused,
+                                   overseer):
+    if total_population_button.is_button_clicked(event):
+        paused = True
+        pause_button.update_text("Play")
+        pause_button.draw(main_screen)
+        pygame.display.flip()
+        vis.graph_total_population(
+            overseer.environment_instance.stats.get_alive_over_time())
+    return paused
 
 
 while running:
@@ -192,6 +212,11 @@ while running:
                                editable_parameters.set_start_organisms,
                                "Orgs")
         handle_reset_button(event, reset_button, overseer)
+        paused = handle_total_population_button(event,
+                                                total_population_button,
+                                                pause_button,
+                                                paused,
+                                                overseer)
 
     # update simulation when not paused
     if frame_count % SIMULATION_SPEED == 0 and not paused:
