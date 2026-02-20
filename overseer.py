@@ -34,7 +34,7 @@ class Overseer:
 
     def save(self, filename="save.json"):
         """
-        Method to save objects of the simulation to a JSON File 
+        Method to save objects of the simulation to a JSON File
         """
         data = self.environment_instance.to_dictionary()
         with open(filename, "w") as f:
