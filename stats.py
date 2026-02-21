@@ -1,4 +1,3 @@
-# import matplotlib
 from organism import Organism
 
 
@@ -10,7 +9,7 @@ class Stats:
         self.total_plants = 0
         self.total_speed = 0
         self.curr_speed_sum = 0
-        self.curr_organism_alive_count += 0
+        self.curr_organism_alive_count = 0
         self.curr_plant_alive_count = 0
         self.alive_over_time = []
         self.plants_over_time = []
@@ -60,3 +59,7 @@ class Stats:
     def get_plant_count(self):
         """Returns total count of plants"""
         return self.total_plants
+
+    def get_alive_over_time(self):
+        """Returns list of tuples of time and alive organisms at that time"""
+        return self.alive_over_time

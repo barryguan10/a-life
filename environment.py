@@ -3,6 +3,7 @@ from organism import Organism
 import globals as gl
 import genome
 import numpy as np
+import stats
 
 # Max food is the maximum energy value a piece of food can have
 MAX_FOOD = 50
@@ -22,7 +23,8 @@ class Environment:
         :param width: integer representing number of horizontal tiles
         :param height: integer representing number of vertical tiles
         :param start_plants: integer representing number of starting plants
-        :param start_organisms: integer representing number of starting organisms
+        :param start_organisms: integer representing number of starting
+        organisms
         """
         self.organisms = None
         self.width = width
@@ -30,9 +32,12 @@ class Environment:
         self.count_down_spawn_plant = SPAWN_PLANT_TIME
         self.empty_places = set()
         self.grid = self.create_grid()
+        self.stats = stats.Stats()
         self.start_plants = start_plants
         self.start_organisms = start_organisms
         self.create_new_environment()
+        self.iteration_count = 0
+        self.stats.snapshot(self.iteration_count)
 
     def create_grid(self):
         """Initializes a grid structure"""
@@ -184,6 +189,8 @@ class Environment:
         self.populate_food_clustered()
         self.organisms = self.new_organism_list(self.start_organisms,
                                                 UNIQUE_STARTING_CREATURES)
+        for org in self.organisms:
+            self.stats.tally_alive_organism(org)
         self.place_organisms_grid()
 
     def update_environment(self):
@@ -201,6 +208,8 @@ class Environment:
         self.resolve_moves()
         self.resolve_asexual_reproduction()
         self.remove_dead_organisms()
+        self.iteration_count += 1
+        self.stats.snapshot(self.iteration_count)
         # TODO: Call Update and update_food method, once created.
 
     def get_organisms(self):
@@ -218,6 +227,7 @@ class Environment:
                 alive_organisms.append(org)
             else:
                 x, y = org.get_pos()
+                self.stats.tally_dead_organism(org)
                 self.grid[x][y]["occupancy"] = 0
                 self.toggle_empty_places((x, y))
 
@@ -254,14 +264,17 @@ class Environment:
                 occupancy = cell["occupancy"]
                 occupant_object = None
 
-                # Search the list of organisms for this organism so we can return instance of it
+                # Search the list of organisms for this organism so we can
+                # return instance of it
                 if occupancy == gl.CREATURE:
                     for organism in self.organisms:
                         if organism.get_pos() == (new_x, new_y):
                             occupant_object = organism
                             break
                 surr_items.append(
-                    ((new_x, new_y), self.grid[new_x][new_y]["occupancy"], occupant_object)
+                    ((new_x, new_y),
+                     self.grid[new_x][new_y]["occupancy"],
+                     occupant_object)
                 )
 
         return surr_items
@@ -351,6 +364,7 @@ class Environment:
             self.grid[child_x][child_y]["occupancy"] = gl.CREATURE
             self.toggle_empty_places((child_x, child_y))
             new_organisms.append(child)
+            self.stats.tally_alive_organism(child)
             org.reproduction_cooldown = org.reproduction_cooldown_length
 
         self.organisms.extend(new_organisms)
@@ -359,7 +373,8 @@ class Environment:
         """
         resolves interactions between organisms
         """
-        # a set to keep track of pairs that have already interacted, preventing repeats
+        # a set to keep track of pairs that have already interacted,
+        # preventing repeats
         resolved_pairs = set()
         new_organisms = []
 
@@ -384,6 +399,7 @@ class Environment:
             if action == "reproduce":
                 child = self.resolve_sexual_reproduction(org, target_organism)
                 new_organisms.append(child)
+                self.stats.tally_alive_organism(child)
 
             elif action == "attack":
                 self.resolve_predation(org, target_organism)
@@ -409,7 +425,8 @@ class Environment:
 
         # splits genome into two parts and combines them into child genome
         split = random.randint(1, len(genome_1.get_genes())-1)
-        child_genes = np.concatenate((genome_1.get_genes()[:split], genome_2.get_genes()[split:]))
+        child_genes = np.concatenate((genome_1.get_genes()[:split],
+                                      genome_2.get_genes()[split:]))
         child_genome = genome.Genome(child_genes)
         child_genome.mutate(rate=0.05, std_dev=0.1)
 
