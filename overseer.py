@@ -57,3 +57,15 @@ class Overseer:
             with open(file_name, "r") as f:
                 data = json.load(f)
             self.environment_instance = environment.Environment.from_dictionary(data)
+
+    def get_saves(self):
+
+        slots = (1,2,3)
+        existing = set()
+
+        for i in slots:
+            file_name = f"saves/{i}.json"
+            if os.path.exists(file_name):
+                existing.add(i)
+
+        return existing

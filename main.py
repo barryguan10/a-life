@@ -138,6 +138,11 @@ save_slot2 = Button((630, 665, 140, 25), "Slot 2 (Empty)")
 save_slot3 = Button((630, 700, 140, 25), "Slot 3 (Empty)")
 slots = ((1, save_slot1), (2, save_slot2), (3, save_slot3))
 
+for number, slot in slots:
+    saved_slots = overseer.get_saves()
+    if number in saved_slots:
+        slot.update_text(f"Slot {number}")
+
 selected_slot = 1
 
 button_list.extend([
