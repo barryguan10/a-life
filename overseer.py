@@ -1,5 +1,6 @@
 import environment
 import json
+import os
 
 
 class Overseer:
@@ -32,18 +33,27 @@ class Overseer:
         # call analysis function to update species
         # call display function to draw environment
 
-    def save(self, filename="save.json"):
+    def save(self, slot_number):
         """
         Method to save objects of the simulation to a JSON File
         """
-        data = self.environment_instance.to_dictionary()
-        with open(filename, "w") as f:
-            json.dump(data, f)
+        if slot_number in (1, 2, 3):
+            file_name = f"saves/{slot_number}.json"
+            data = self.environment_instance.to_dictionary()
+            with open(file_name, "w") as f:
+                json.dump(data, f)
+        else:
+            return
 
-    def load(self, filename="save.json"):
+    def load(self, slot_number):
         """
         Method to load the simulation from a JSON file
         """
-        with open(filename, "r") as f:
-            data = json.load(f)
-        self.environment_instance = environment.Environment.from_dictionary(data)
+        if slot_number in (1, 2, 3):
+            file_name = f"saves/{slot_number}.json"
+            if not os.path.exists(file_name):
+                return
+
+            with open(file_name, "r") as f:
+                data = json.load(f)
+            self.environment_instance = environment.Environment.from_dictionary(data)

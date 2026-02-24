@@ -131,11 +131,20 @@ save_button = Button((500, 630, 120, 25), "Save")
 # --- Load Button --
 load_button = Button((500, 665, 120, 25), "Load")
 
+# --- Save Slot Buttons ---
+
+save_slot1 = Button((630, 630, 140, 25), "Slot 1 (Empty)")
+save_slot2 = Button((630, 665, 140, 25), "Slot 2 (Empty)")
+save_slot3 = Button((630, 700, 140, 25), "Slot 3 (Empty)")
+slots = ((1, save_slot1), (2, save_slot2), (3, save_slot3))
+
+selected_slot = 1
+
 button_list.extend([
     plant_minus, plant_plus, plant_display,
     org_minus, org_plus, org_display,
     reset_button, total_population_button, save_button,
-    load_button
+    load_button, save_slot1, save_slot2, save_slot3
 ])
 
 
@@ -186,14 +195,38 @@ def handle_total_population_button(event,
     return paused
 
 
-def handle_save_button(event, save_button, overseer):
+def handle_save_button(event, save_button, overseer, slot_selected):
     if save_button.is_button_clicked(event):
-        overseer.save()
+        overseer.save(slot_selected)
+    if slot_selected is not None and save_button.is_button_clicked(event):
+        slot_tuple = slots[slot_selected-1]
+        slot = slot_tuple[1]
+        slot.update_text(f"Slot {slot_selected}")
 
 
-def handle_load_button(event, load_button, overseer):
+def handle_load_button(event, load_button, overseer, slot_selected):
     if load_button.is_button_clicked(event):
-        overseer.load()
+        overseer.load(slot_selected)
+
+
+def handle_select_slot(event, slot1, slot2, slot3):
+
+    slots = ((1, slot1), (2, slot2), (3, slot3))
+    if slot1.is_button_clicked(event):
+        pressed = 1
+    elif slot2.is_button_clicked(event):
+        pressed = 2
+    elif slot3.is_button_clicked(event):
+        pressed = 3
+    else:
+        pressed = selected_slot
+
+    for number, button in slots:
+        if number == pressed:
+            button.main_color = (0, 90, 180)
+        else:
+            button.main_color = (255, 0, 0)
+    return pressed
 
 
 while running:
@@ -234,9 +267,9 @@ while running:
                                                 pause_button,
                                                 paused,
                                                 overseer)
-
-        handle_save_button(event, save_button, overseer)
-        handle_load_button(event, load_button, overseer)
+        selected_slot = handle_select_slot(event, save_slot1, save_slot2, save_slot3)
+        handle_save_button(event, save_button, overseer, selected_slot)
+        handle_load_button(event, load_button, overseer, selected_slot)
 
     # update simulation when not paused
     if frame_count % SIMULATION_SPEED == 0 and not paused:
