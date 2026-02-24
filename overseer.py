@@ -60,7 +60,7 @@ class Overseer:
 
     def get_saves(self):
 
-        slots = (1,2,3)
+        slots = (1, 2, 3)
         existing = set()
 
         for i in slots:
