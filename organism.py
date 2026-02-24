@@ -16,7 +16,7 @@ class Organism:
 
     def __init__(self, genome=None, x_pos=0, y_pos=0):
         self.age = 0  # track timesteps alive for reproduction, but can be repurposed more generally
-        self.genome = genome if genome is not None else Genome(None, 4)
+        self.genome = genome if genome is not None else Genome(None, 6)
         phenotype = self.decode(self.genome)
         self.color = phenotype["color"]
         self.speed = phenotype["speed"]
@@ -196,3 +196,48 @@ class Organism:
                 if self.energy > organism_object.energy * 10:
                     return ("attack", organism_object)
         return None
+
+    def to_dictionary(self):
+        """
+        Generating a Dictionary of the Organism
+
+        :param self: an Organism Object
+        """
+
+        dictionary = {
+            "genome": self.genome.to_dictionary(),
+            "age": self.age,
+            "x_pos": self.x_pos,
+            "y_pos": self.y_pos,
+            "energy": self.energy,
+            "heading": self.heading,
+            "reproduction_cooldown": self.reproduction_cooldown,
+            "reproduction_cooldown_length": self.reproduction_cooldown_length
+        }
+        return dictionary
+
+    @classmethod
+    def from_dictionary(class_type, dictionary):
+        """
+        Creating an Organism Object from a dictionary
+
+        :param class_type: Organism class
+        :param dictionary: dictionary object of saved attributes
+        """
+
+        # Getting the parameters for Organism creation
+        genome = Genome.from_dictionary(dictionary=dictionary["genome"])
+        x_pos = dictionary["x_pos"]
+        y_pos = dictionary["y_pos"]
+
+        # Creating the object
+        org = class_type(genome=genome, x_pos=x_pos, y_pos=y_pos)
+
+        # Setting attributes
+        org.energy = dictionary["energy"]
+        org.age = dictionary["age"]
+        org.heading = dictionary["heading"]
+        org.reproduction_cooldown = dictionary["reproduction_cooldown"]
+        org.reproduction_cooldown_length = dictionary["reproduction_cooldown_length"]
+
+        return org

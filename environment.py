@@ -447,3 +447,45 @@ class Environment:
         """
         prey.adjust_energy(-prey.energy)
         predator.adjust_energy(prey.energy)
+
+    def to_dictionary(self):
+        """
+        Creates a dictionary from an environment object
+
+        :param self: Description
+        """
+        dictionary = {
+            "width": self.width,
+            "height": self.height,
+            "count_down_spawn_plant": self.count_down_spawn_plant,
+            "empty_places": list(self.empty_places),
+            "grid": self.grid,
+            "start_plants": self.start_plants,
+            "start_organisms": self.start_organisms,
+            "organisms": [org.to_dictionary() for org in self.organisms]
+
+        }
+        return dictionary
+
+    @classmethod
+    def from_dictionary(class_type, dictionary):
+        """
+        Creates an environment from a dictionary
+
+        :param class_type: Environment class
+        :param dictionary: Dictionary with attributes
+        """
+
+        width = dictionary["width"]
+        height = dictionary["height"]
+        start_plants = dictionary["start_plants"]
+        start_organisms = dictionary["start_organisms"]
+
+        env = class_type(width, height, start_plants, start_organisms)
+
+        env.count_down_spawn_plant = dictionary["count_down_spawn_plant"]
+        env.empty_places = set(tuple(i) for i in dictionary["empty_places"])
+        env.grid = dictionary["grid"]
+        env.organisms = [Organism.from_dictionary(org) for org in dictionary["organisms"]]
+
+        return env

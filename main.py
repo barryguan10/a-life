@@ -125,10 +125,17 @@ reset_button = Button((370, 630, 120, 25), "Reset")
 # --- View Total Population Button ---
 total_population_button = Button((630, 10, 200, 25), "View Total Population")
 
+# --- Save Button ---
+save_button = Button((500, 630, 120, 25), "Save")
+
+# --- Load Button --
+load_button = Button((500, 665, 120, 25), "Load")
+
 button_list.extend([
     plant_minus, plant_plus, plant_display,
     org_minus, org_plus, org_display,
-    reset_button, total_population_button
+    reset_button, total_population_button, save_button,
+    load_button
 ])
 
 
@@ -179,6 +186,16 @@ def handle_total_population_button(event,
     return paused
 
 
+def handle_save_button(event, save_button, overseer):
+    if save_button.is_button_clicked(event):
+        overseer.save()
+
+
+def handle_load_button(event, load_button, overseer):
+    if load_button.is_button_clicked(event):
+        overseer.load()
+
+
 while running:
     clock.tick(60)
     frame_count += 1
@@ -217,6 +234,9 @@ while running:
                                                 pause_button,
                                                 paused,
                                                 overseer)
+
+        handle_save_button(event, save_button, overseer)
+        handle_load_button(event, load_button, overseer)
 
     # update simulation when not paused
     if frame_count % SIMULATION_SPEED == 0 and not paused:

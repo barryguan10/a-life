@@ -43,3 +43,20 @@ class Genome:
         Returns a copy of the genome for editing
         """
         return Genome(genes=self.genes.copy())
+
+    def to_dictionary(self):
+        """Savest the attributes in class to a dictionary"""
+        dictionary = {
+            "genes": self.genes.tolist()
+        }
+        return dictionary
+
+    @classmethod
+    def from_dictionary(class_type, dictionary):
+        """
+        Generates a genome object from a dictionary
+
+        :param class_type: Genome class
+        :param dictionary: Dictionary for the genome
+        """
+        return (class_type(genes=np.array(dictionary['genes'], dtype=float)))
