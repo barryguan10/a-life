@@ -241,11 +241,10 @@ def handle_select_slot(event, slot1, slot2, slot3):
     return pressed
 
 
-simulation_accumulator = 0
+simulation_accumulator = 0  # variable to keep track of time across frames
 
 while running:
-    # clock.tick(60)
-    dt = clock.tick(FPS) / 1000
+    dt = clock.tick(FPS) / 1000  # how much time has passed since the last frame
     frame_count += 1
     pygame.display.set_caption(CAPTION_PAUSED if paused else CAPTION_PLAY)
 
@@ -290,17 +289,13 @@ while running:
         handle_save_button(event, save_button, overseer, selected_slot)
         handle_load_button(event, load_button, overseer, selected_slot)
 
-    # update simulation when not paused
-    # if frame_count % editable_parameters.get_simulation_speed() == 0 and not paused:
-    #     overseer.simulate_step()
-
     if not paused:
-        simulation_accumulator += dt
+        simulation_accumulator += dt  # adds time to the accumulator each iteration of while running
         steps_per_second = editable_parameters.get_simulation_speed()
 
-        step_time = 1.0 / steps_per_second
+        step_time = 1.0 / steps_per_second  # how many seconds per simulation step
 
-        while simulation_accumulator >= step_time:
+        while simulation_accumulator >= step_time:  # loops through the number of steps until length of accumulator
             overseer.simulate_step()
             simulation_accumulator -= step_time
 
