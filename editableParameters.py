@@ -6,6 +6,7 @@ class EditableParameters:
     def __init__(self):
         self._start_plants = 50
         self._start_organisms = 10
+        self._simulation_speed = 10
 
     # --- Plants ---
     def get_start_plants(self):
@@ -20,3 +21,9 @@ class EditableParameters:
 
     def set_start_organisms(self, value):
         self._start_organisms = max(0, value)
+
+    def get_simulation_speed(self):
+        return self._simulation_speed
+
+    def set_simulation_speed(self, value):
+        self._simulation_speed = max(1, value)
