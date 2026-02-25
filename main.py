@@ -19,7 +19,7 @@ MAIN_WINDOW_SIZE = (GRID_WIDTH * CELL_SIZE + 400,
 CAPTION_PLAY = "A-Life Simulation: PLAYING"
 CAPTION_PAUSED = "A-Life Simulation: PAUSED"
 FPS = 60
-SIMULATION_SPEED = 10  # Update visual every number of these frames
+SIMULATION_ACCUMULATOR = 0
 
 
 def draw_environment(screen, env):
@@ -123,7 +123,7 @@ org_display = Button((240, 665, 120, 25),
 speed_minus = Button((140, 700, 40, 25), "-")
 speed_plus = Button((190, 700, 40, 25), "+")
 speed_display = Button((240, 700, 120, 25),
-                     f"Speed: {editable_parameters.get_simulation_speed()}")
+                       f"Speed: {editable_parameters.get_simulation_speed()}")
 
 # --- Reset Button ---
 reset_button = Button((370, 630, 120, 25), "Reset")
@@ -243,6 +243,21 @@ def handle_select_slot(event, slot1, slot2, slot3):
 
 simulation_accumulator = 0  # variable to keep track of time across frames
 
+
+def update_simulation(accumulator, time_per_frame, speed, overseer, paused):
+    if not paused:
+        accumulator += time_per_frame  # adds time to the accumulator each iteration of while running
+        steps_per_second = speed
+
+        step_time = 1.0 / steps_per_second  # how many seconds per simulation step
+
+        while accumulator >= step_time:  # loops through the number of steps until length of accumulator
+            overseer.simulate_step()
+            accumulator -= step_time
+
+    return accumulator
+
+
 while running:
     dt = clock.tick(FPS) / 1000  # how much time has passed since the last frame
     frame_count += 1
@@ -289,15 +304,13 @@ while running:
         handle_save_button(event, save_button, overseer, selected_slot)
         handle_load_button(event, load_button, overseer, selected_slot)
 
-    if not paused:
-        simulation_accumulator += dt  # adds time to the accumulator each iteration of while running
-        steps_per_second = editable_parameters.get_simulation_speed()
-
-        step_time = 1.0 / steps_per_second  # how many seconds per simulation step
-
-        while simulation_accumulator >= step_time:  # loops through the number of steps until length of accumulator
-            overseer.simulate_step()
-            simulation_accumulator -= step_time
+    simulation_accumulator = update_simulation(
+        simulation_accumulator,
+        dt,
+        editable_parameters.get_simulation_speed(),
+        overseer,
+        paused
+    )
 
     # draw the grid and organism
     draw_environment(sim_surface, overseer.environment_instance)
