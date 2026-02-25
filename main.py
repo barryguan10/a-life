@@ -119,6 +119,12 @@ org_plus = Button((190, 665, 40, 25), "+")
 org_display = Button((240, 665, 120, 25),
                      f"Orgs: {editable_parameters.get_start_organisms()}")
 
+# --- Speed Controls ---
+speed_minus = Button((140, 700, 40, 25), "-")
+speed_plus = Button((190, 700, 40, 25), "+")
+speed_display = Button((240, 700, 120, 25),
+                     f"Speed: {editable_parameters.get_simulation_speed()}")
+
 # --- Reset Button ---
 reset_button = Button((370, 630, 120, 25), "Reset")
 
@@ -149,7 +155,8 @@ button_list.extend([
     plant_minus, plant_plus, plant_display,
     org_minus, org_plus, org_display,
     reset_button, total_population_button, save_button,
-    load_button, save_slot1, save_slot2, save_slot3
+    load_button, save_slot1, save_slot2, save_slot3,
+    speed_minus, speed_plus, speed_display
 ])
 
 
@@ -266,6 +273,10 @@ while running:
                                editable_parameters.get_start_organisms,
                                editable_parameters.set_start_organisms,
                                "Orgs")
+        handle_numeric_buttons(event, speed_plus, speed_minus, speed_display,
+                               editable_parameters.get_simulation_speed,
+                               editable_parameters.set_simulation_speed,
+                               "Speed")
         handle_reset_button(event, reset_button, overseer)
         paused = handle_total_population_button(event,
                                                 total_population_button,
