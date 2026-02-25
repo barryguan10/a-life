@@ -241,8 +241,11 @@ def handle_select_slot(event, slot1, slot2, slot3):
     return pressed
 
 
+simulation_accumulator = 0
+
 while running:
-    clock.tick(60)
+    # clock.tick(60)
+    dt = clock.tick(FPS) / 1000
     frame_count += 1
     pygame.display.set_caption(CAPTION_PAUSED if paused else CAPTION_PLAY)
 
@@ -288,8 +291,18 @@ while running:
         handle_load_button(event, load_button, overseer, selected_slot)
 
     # update simulation when not paused
-    if frame_count % SIMULATION_SPEED == 0 and not paused:
-        overseer.simulate_step()
+    # if frame_count % editable_parameters.get_simulation_speed() == 0 and not paused:
+    #     overseer.simulate_step()
+
+    if not paused:
+        simulation_accumulator += dt
+        steps_per_second = editable_parameters.get_simulation_speed()
+
+        step_time = 1.0 / steps_per_second
+
+        while simulation_accumulator >= step_time:
+            overseer.simulate_step()
+            simulation_accumulator -= step_time
 
     # draw the grid and organism
     draw_environment(sim_surface, overseer.environment_instance)
