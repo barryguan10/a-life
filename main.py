@@ -19,7 +19,7 @@ MAIN_WINDOW_SIZE = (GRID_WIDTH * CELL_SIZE + 400,
 CAPTION_PLAY = "A-Life Simulation: PLAYING"
 CAPTION_PAUSED = "A-Life Simulation: PAUSED"
 FPS = 60
-SIMULATION_SPEED = 10  # Update visual every number of these frames
+SIMULATION_ACCUMULATOR = 0
 
 
 def draw_environment(screen, env):
@@ -119,6 +119,12 @@ org_plus = Button((190, 665, 40, 25), "+")
 org_display = Button((240, 665, 120, 25),
                      f"Orgs: {editable_parameters.get_start_organisms()}")
 
+# --- Speed Controls ---
+speed_minus = Button((140, 700, 40, 25), "-")
+speed_plus = Button((190, 700, 40, 25), "+")
+speed_display = Button((240, 700, 120, 25),
+                       f"Speed: {editable_parameters.get_simulation_speed()}")
+
 # --- Reset Button ---
 reset_button = Button((370, 630, 120, 25), "Reset")
 
@@ -149,7 +155,8 @@ button_list.extend([
     plant_minus, plant_plus, plant_display,
     org_minus, org_plus, org_display,
     reset_button, total_population_button, save_button,
-    load_button, save_slot1, save_slot2, save_slot3
+    load_button, save_slot1, save_slot2, save_slot3,
+    speed_minus, speed_plus, speed_display
 ])
 
 
@@ -234,8 +241,25 @@ def handle_select_slot(event, slot1, slot2, slot3):
     return pressed
 
 
+simulation_accumulator = 0  # variable to keep track of time across frames
+
+
+def update_simulation(accumulator, time_per_frame, speed, overseer, paused):
+    if not paused:
+        accumulator += time_per_frame  # adds time to the accumulator each iteration of while running
+        steps_per_second = speed
+
+        step_time = 1.0 / steps_per_second  # how many seconds per simulation step
+
+        while accumulator >= step_time:  # loops through the number of steps until length of accumulator
+            overseer.simulate_step()
+            accumulator -= step_time
+
+    return accumulator
+
+
 while running:
-    clock.tick(60)
+    dt = clock.tick(FPS) / 1000  # how much time has passed since the last frame
     frame_count += 1
     pygame.display.set_caption(CAPTION_PAUSED if paused else CAPTION_PLAY)
 
@@ -266,6 +290,10 @@ while running:
                                editable_parameters.get_start_organisms,
                                editable_parameters.set_start_organisms,
                                "Orgs")
+        handle_numeric_buttons(event, speed_plus, speed_minus, speed_display,
+                               editable_parameters.get_simulation_speed,
+                               editable_parameters.set_simulation_speed,
+                               "Speed")
         handle_reset_button(event, reset_button, overseer)
         paused = handle_total_population_button(event,
                                                 total_population_button,
@@ -276,9 +304,13 @@ while running:
         handle_save_button(event, save_button, overseer, selected_slot)
         handle_load_button(event, load_button, overseer, selected_slot)
 
-    # update simulation when not paused
-    if frame_count % SIMULATION_SPEED == 0 and not paused:
-        overseer.simulate_step()
+    simulation_accumulator = update_simulation(
+        simulation_accumulator,
+        dt,
+        editable_parameters.get_simulation_speed(),
+        overseer,
+        paused
+    )
 
     # draw the grid and organism
     draw_environment(sim_surface, overseer.environment_instance)
