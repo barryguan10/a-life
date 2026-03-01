@@ -33,6 +33,70 @@ def graph_total_population(alive_over_time):
     plt.show()
 
 
+def build_color_dictionary(color_over_time):
+    """Build a dictionary of all color keys with blank entries lists
+
+    Args:
+        param1: list of tuples of time and dictionary of colors at that time
+
+    Returns:
+        Dictionary of colors and an empty list of their population counts
+    """
+    all_color_dict = {}
+
+    for _, color_dict in color_over_time:
+        for color in color_dict:
+            if color not in all_color_dict:
+                all_color_dict[color] = list()
+    return all_color_dict
+
+
+def populate_color_dictionary(color_over_time, all_color_dict, times):
+    """Populate the all_color_dict with the counts for each color at each time
+
+    Args:
+        param1: list of tuples of time and dictionary of colors at that time
+        param2: dictionary of colors and an empty list of their population
+        counts
+        param3: list to be populated with times
+
+    Returns:
+        None, updates all_color_dict with population counts and times list
+        with times
+    """
+    for time, color_dict in color_over_time:
+        times.append(time)
+        for color, counts in all_color_dict.items():
+            if color in color_dict:
+                all_color_dict[color].append(color_dict[color])
+            else:
+                all_color_dict[color].append(0)
+
+
+def convert_zeros_to_nan(counts):
+    """Convert zero counts to NaN for better graphing
+
+    Args:
+        param1: list of population counts for a color over time
+    Returns:
+        None, updates counts list with zeros converted to NaN when the zero
+        is not preceeded by or followed by a non-zero count
+    """
+    for index, value in enumerate(counts):
+        if index == 0:
+            prev_value = 0
+        else:
+            prev_value = counts[index - 1]
+
+        if index + 1 <= len(counts) - 1:
+            next_value = counts[index + 1]
+        else:
+            next_value = 0
+
+        if value == 0 and prev_value == 0 and next_value == 0:
+            counts[index] = nan
+
+
 def graph_color_population(color_over_time):
     """Graph color population over time using matplotlib
 
@@ -43,42 +107,17 @@ def graph_color_population(color_over_time):
         None, displays graph of total color population over time
     """
     times = []
-    all_color_dict = {}
 
     # Build a dictionary of all colors and a list of times
-    for time, color_dict in color_over_time:
-        times.append(time)
-        for color in color_dict:
-            if color not in all_color_dict:
-                all_color_dict[color] = []
+    all_color_dict = build_color_dictionary(color_over_time)
 
     # populate the all_color_dict with the counts for each color at each time
-    for time, color_dict in color_over_time:
-        for color, counts in all_color_dict.items():
-            if color in color_dict:
-                all_color_dict[color].append(color_dict[color])
-            else:
-                all_color_dict[color].append(0)
+    populate_color_dictionary(color_over_time, all_color_dict, times)
 
     plt.figure(num="Genome Color Population Per Iteration")
     for color, counts in all_color_dict.items():
         plot_color = tuple([x/255 for x in color])
-
-        # Don't plot zero counts unless it's the first zero or last zero
-        for index, value in enumerate(counts):
-            if index == 0:
-                prev_value = 0
-            else:
-                prev_value = counts[index - 1]
-
-            if index + 1 <= len(counts) - 1:
-                next_value = counts[index + 1]
-            else:
-                next_value = 0
-
-            if value == 0 and prev_value == 0 and next_value == 0:
-                counts[index] = nan
-
+        convert_zeros_to_nan(counts)
         plt.plot(times, counts, label=color, color=plot_color)
 
     # Set Y axis to integer tick marks only.
@@ -105,7 +144,6 @@ def graph_plant_population(plant_over_time):
     Returns:
         None, displays graph of total plant population over time
     """
-
     # Get independent times and total population lists from alive_over_time
     time, plant_population = zip(*plant_over_time)
 
