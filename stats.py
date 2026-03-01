@@ -44,7 +44,7 @@ class Stats:
 
     def tally_dead_plant(self):
         """Adjusts the current stats for when a plant gets eaten"""
-        self.curr_organism_alive_count -= 1
+        self.curr_plant_alive_count -= 1
 
     def snapshot(self, time):
         """Method for gathering current data and logging the time"""
@@ -52,6 +52,7 @@ class Stats:
         # Capture current amount of organisms alive
         self.alive_over_time.append((time, self.curr_organism_alive_count))
 
+        # capture current color population
         self.color_over_time.append((time, self.color_dict.copy()))
 
         if self.curr_organism_alive_count > 0:
@@ -79,3 +80,7 @@ class Stats:
     def get_color_over_time(self):
         """Returns list of tuples of time and color dictionary at that time"""
         return self.color_over_time
+
+    def get_plant_over_time(self):
+        """Returns list of tuples of time and alive plants at that time"""
+        return self.plants_over_time
