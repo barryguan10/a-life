@@ -67,6 +67,7 @@ class Environment:
         self.grid[x][y]["occupancy"] = gl.ENERGY
         self.grid[x][y]["food"] = energy_val
         self.toggle_empty_places((x, y))
+        self.stats.tally_alive_plant()
 
     def populate_food_clustered(self, radius=3):
         """Populate food in clusters using total start_plants count"""
@@ -168,6 +169,7 @@ class Environment:
                 self.grid[random_x][random_y]["occupancy"] = gl.ENERGY
                 self.grid[random_x][random_y]["food"] = 1
                 self.toggle_empty_places((random_x, random_y))
+                self.stats.tally_alive_plant()
                 break
         self.count_down_spawn_plant = None
 
@@ -298,6 +300,8 @@ class Environment:
         energy_amount = self.grid[pos_x][pos_y]["food"]
 
         self.grid[pos_x][pos_y]["food"] = 0
+        if energy_amount > 0:
+            self.stats.tally_dead_plant()
 
         return energy_amount
 
