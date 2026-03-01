@@ -16,7 +16,7 @@ class Genome:
         Args:
             param1: rate (float) between 0 and 1, inclusive. Represents the
             mutation rate percentage for any given gene to mutate.
-            default is 0.05 (5%)
+            default is 0.25 (25%)
 
             param2: std_dev (float) represents the standard deviation from
             the mean for a normal distribution. Impacts how much more/less
