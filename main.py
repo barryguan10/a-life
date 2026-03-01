@@ -131,6 +131,9 @@ reset_button = Button((370, 630, 120, 25), "Reset")
 # --- View Total Population Button ---
 total_population_button = Button((630, 10, 200, 25), "View Total Population")
 
+# --- View Color Population Button ---
+color_population_button = Button((630, 40, 200, 25), "View Color Population")
+
 # --- Save Button ---
 save_button = Button((500, 630, 120, 25), "Save")
 
@@ -156,7 +159,8 @@ button_list.extend([
     org_minus, org_plus, org_display,
     reset_button, total_population_button, save_button,
     load_button, save_slot1, save_slot2, save_slot3,
-    speed_minus, speed_plus, speed_display
+    speed_minus, speed_plus, speed_display,
+    color_population_button
 ])
 
 
@@ -204,6 +208,21 @@ def handle_total_population_button(event,
         pygame.display.flip()
         vis.graph_total_population(
             overseer.environment_instance.stats.get_alive_over_time())
+    return paused
+
+
+def handle_color_population_button(event,
+                                   color_population_button,
+                                   pause_button,
+                                   paused,
+                                   overseer):
+    if color_population_button.is_button_clicked(event):
+        paused = True
+        pause_button.update_text("Play")
+        pause_button.draw(main_screen)
+        pygame.display.flip()
+        vis.graph_color_population(
+            overseer.environment_instance.stats.get_color_over_time())
     return paused
 
 
@@ -301,6 +320,11 @@ while running:
         handle_reset_button(event, reset_button, overseer)
         paused = handle_total_population_button(event,
                                                 total_population_button,
+                                                pause_button,
+                                                paused,
+                                                overseer)
+        paused = handle_color_population_button(event,
+                                                color_population_button,
                                                 pause_button,
                                                 paused,
                                                 overseer)

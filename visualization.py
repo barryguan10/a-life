@@ -30,3 +30,50 @@ def graph_total_population(alive_over_time):
 
     # Show the graph
     plt.show()
+
+
+def graph_color_population(color_over_time):
+    """Graph color population over time using matplotlib
+
+    Args:
+        param1: list of tuples of time and dictionary of colors at that time
+
+    Returns:
+        None, displays graph of total color population over time
+    """
+    times = []
+    all_color_dict = {}
+
+    # Build a dictionary of all colors and a list of times
+    for time, color_dict in color_over_time:
+        times.append(time)
+        for color in color_dict:
+            if color not in all_color_dict:
+                all_color_dict[color] = []
+
+    # populate the all_color_dict with the counts for each color at each time
+    for time, color_dict in color_over_time:
+        for color, counts in all_color_dict.items():
+            if color in color_dict:
+                all_color_dict[color].append(color_dict[color])
+            else:
+                all_color_dict[color].append(0)
+
+    plt.figure(num="Genome Color Population Per Iteration")
+    for color, counts in all_color_dict.items():
+        plot_color = tuple([x/255 for x in color])
+        plt.plot(times, counts, label=color, color=plot_color)
+
+    # Set Y axis to integer tick marks only.
+    plt.locator_params(axis='y', integer=True)
+
+    # Label axes and title
+    plt.xlabel("Iteration Number")
+    plt.ylabel("Population by color")
+    plt.title("Genome Color Population per Iteration")
+
+    # Add grid for readability
+    plt.grid(True)
+
+    # Show the graph
+    plt.show()
