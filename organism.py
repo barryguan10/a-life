@@ -39,7 +39,9 @@ class Organism:
 
         # using HSV for color so that minor changes in enes are color
         # consistent, visually.
-        hue = float(genes[0])
+        hue = int(float(genes[0]) * 360)
+        hue = hue // 30  # divide hue into 12 possible colors
+        hue = float(hue/12)  # convert back to 0-1 range for hsv_to_rgb
         sat = 1.0
         val = 1.0
         rgb = hsv_to_rgb(hue, sat, val)
