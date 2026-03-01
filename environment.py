@@ -488,6 +488,7 @@ class Environment:
         env.count_down_spawn_plant = dictionary["count_down_spawn_plant"]
         env.empty_places = set(tuple(i) for i in dictionary["empty_places"])
         env.grid = dictionary["grid"]
-        env.organisms = [Organism.from_dictionary(org) for org in dictionary["organisms"]]
+        env.organisms = [Organism.from_dictionary(org)
+                         for org in dictionary["organisms"]]
 
         return env
