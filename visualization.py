@@ -17,6 +17,9 @@ def graph_total_population(alive_over_time):
     plt.figure(num="Total Population Per Iteration")
     plt.plot(time, total_population)
 
+    # Set Y axis to integer tick marks only.
+    plt.locator_params(axis='y', integer=True)
+
     # Label axes and title
     plt.xlabel("Iteration Number")
     plt.ylabel("Total Population")
