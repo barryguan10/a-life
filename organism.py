@@ -15,7 +15,8 @@ class Organism:
     """
 
     def __init__(self, genome=None, x_pos=0, y_pos=0):
-        self.age = 0  # track timesteps alive for reproduction, but can be repurposed more generally
+        # track timesteps alive for reproduction, can be repurposed generally
+        self.age = 0
         self.genome = genome if genome is not None else Genome(None, 6)
         phenotype = self.decode(self.genome)
         self.color = phenotype["color"]
@@ -27,7 +28,8 @@ class Organism:
         self.heading = choice(['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'])
         self.actions = gl.OMNI_ACTIONS
         self.reproduction_age = phenotype["reproduction_age"]
-        self.reproduction_energy_threshold = phenotype["reproduction_energy_threshold"]
+        self.reproduction_energy_threshold = (
+            phenotype["reproduction_energy_threshold"])
         self.reproduction_energy_cost = phenotype["reproduction_energy_cost"]
         self.reproduction_cooldown = 0
         self.reproduction_cooldown_length = 30
@@ -37,7 +39,9 @@ class Organism:
 
         # using HSV for color so that minor changes in enes are color
         # consistent, visually.
-        hue = float(genes[0])
+        hue = int(float(genes[0]) * 360)
+        hue = hue // 30  # divide hue into 12 possible colors
+        hue = float(hue/12)  # convert back to 0-1 range for hsv_to_rgb
         sat = 1.0
         val = 1.0
         rgb = hsv_to_rgb(hue, sat, val)
@@ -165,20 +169,24 @@ class Organism:
     def genetic_comparison(self, other_organism):
         """
         Compares difference between all elements of the organism's genome.
-        Potentially can revise in the future if we want to adjust how to assess similarities.
+        Potentially can revise in the future if we want to adjust how to
+        assess similarities.
         """
         genome_1 = self.genome.get_genes()
         genome_2 = other_organism.genome.get_genes()
 
-        # Take absolute value of the difference between each element in the genome
+        # Take absolute value of the difference between each element in the
+        # genome
         difference = abs(genome_1-genome_2)
 
-        # The average difference will be between 0 and 1, with a higher value indicating higher difference
+        # The average difference will be between 0 and 1, with a higher value
+        # indicating higher difference
         return 1 - difference.mean()
 
     def choose_interaction(self, local_view):
         """
-        If organism detects neighboring organism, decide interactions with that organism
+        If organism detects neighboring organism, decide interactions with
+        that organism
         """
         for pos, status, organism_object in local_view:
             if status == gl.CREATURE and organism_object is not None:
@@ -187,12 +195,14 @@ class Organism:
                     continue
 
                 if self.can_reproduce() and organism_object.can_reproduce():
-                    genetic_compatibility = self.genetic_comparison(organism_object)
+                    genetic_compatibility = (
+                        self.genetic_comparison(organism_object))
 
                     if genetic_compatibility > 0.25:
                         return ("reproduce", organism_object)
 
-                # Draft for predation, simple rule is if energy is greater and not reproducing
+                # Draft for predation, simple rule is if energy is greater
+                # and not reproducing
                 if self.energy > organism_object.energy * 10:
                     return ("attack", organism_object)
         return None
@@ -238,6 +248,6 @@ class Organism:
         org.age = dictionary["age"]
         org.heading = dictionary["heading"]
         org.reproduction_cooldown = dictionary["reproduction_cooldown"]
-        org.reproduction_cooldown_length = dictionary["reproduction_cooldown_length"]
-
+        org.reproduction_cooldown_length = (
+            dictionary["reproduction_cooldown_length"])
         return org

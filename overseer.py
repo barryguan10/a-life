@@ -56,7 +56,8 @@ class Overseer:
 
             with open(file_name, "r") as f:
                 data = json.load(f)
-            self.environment_instance = environment.Environment.from_dictionary(data)
+            self.environment_instance = (
+                environment.Environment.from_dictionary(data))
 
     def get_saves(self):
 

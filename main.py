@@ -14,7 +14,7 @@ GRID_WIDTH = 25
 GRID_HEIGHT = 25
 CELL_SIZE = 25
 WINDOW_SIZE = (GRID_WIDTH * CELL_SIZE, GRID_HEIGHT * CELL_SIZE)
-MAIN_WINDOW_SIZE = (GRID_WIDTH * CELL_SIZE + 400,
+MAIN_WINDOW_SIZE = (GRID_WIDTH * CELL_SIZE + 220,
                     GRID_HEIGHT * CELL_SIZE + 100)
 CAPTION_PLAY = "A-Life Simulation: PLAYING"
 CAPTION_PAUSED = "A-Life Simulation: PAUSED"
@@ -131,6 +131,12 @@ reset_button = Button((370, 630, 120, 25), "Reset")
 # --- View Total Population Button ---
 total_population_button = Button((630, 10, 200, 25), "View Total Population")
 
+# --- View Color Population Button ---
+color_population_button = Button((630, 40, 200, 25), "View Color Population")
+
+# --- View Plant Population Button ---
+plant_population_button = Button((630, 70, 200, 25), "View Plant Population")
+
 # --- Save Button ---
 save_button = Button((500, 630, 120, 25), "Save")
 
@@ -156,7 +162,8 @@ button_list.extend([
     org_minus, org_plus, org_display,
     reset_button, total_population_button, save_button,
     load_button, save_slot1, save_slot2, save_slot3,
-    speed_minus, speed_plus, speed_display
+    speed_minus, speed_plus, speed_display,
+    color_population_button, plant_population_button
 ])
 
 
@@ -207,6 +214,36 @@ def handle_total_population_button(event,
     return paused
 
 
+def handle_color_population_button(event,
+                                   color_population_button,
+                                   pause_button,
+                                   paused,
+                                   overseer):
+    if color_population_button.is_button_clicked(event):
+        paused = True
+        pause_button.update_text("Play")
+        pause_button.draw(main_screen)
+        pygame.display.flip()
+        vis.graph_color_population(
+            overseer.environment_instance.stats.get_color_over_time())
+    return paused
+
+
+def handle_plant_population_button(event,
+                                   plant_population_button,
+                                   pause_button,
+                                   paused,
+                                   overseer):
+    if plant_population_button.is_button_clicked(event):
+        paused = True
+        pause_button.update_text("Play")
+        pause_button.draw(main_screen)
+        pygame.display.flip()
+        vis.graph_plant_population(
+            overseer.environment_instance.stats.get_plant_over_time())
+    return paused
+
+
 def handle_save_button(event, save_button, overseer, slot_selected):
     if save_button.is_button_clicked(event):
         overseer.save(slot_selected)
@@ -246,12 +283,15 @@ simulation_accumulator = 0  # variable to keep track of time across frames
 
 def update_simulation(accumulator, time_per_frame, speed, overseer, paused):
     if not paused:
-        accumulator += time_per_frame  # adds time to the accumulator each iteration of while running
+        # adds time to the accumulator each iteration of while running
+        accumulator += time_per_frame
         steps_per_second = speed
 
-        step_time = 1.0 / steps_per_second  # how many seconds per simulation step
+        # how many seconds per simulation step
+        step_time = 1.0 / steps_per_second
 
-        while accumulator >= step_time:  # loops through the number of steps until length of accumulator
+        # loops through the number of steps until length of accumulator
+        while accumulator >= step_time:
             overseer.simulate_step()
             accumulator -= step_time
 
@@ -259,7 +299,8 @@ def update_simulation(accumulator, time_per_frame, speed, overseer, paused):
 
 
 while running:
-    dt = clock.tick(FPS) / 1000  # how much time has passed since the last frame
+    # how much time has passed since the last frame
+    dt = clock.tick(FPS) / 1000
     frame_count += 1
     pygame.display.set_caption(CAPTION_PAUSED if paused else CAPTION_PLAY)
 
@@ -300,7 +341,19 @@ while running:
                                                 pause_button,
                                                 paused,
                                                 overseer)
-        selected_slot = handle_select_slot(event, save_slot1, save_slot2, save_slot3)
+        paused = handle_color_population_button(event,
+                                                color_population_button,
+                                                pause_button,
+                                                paused,
+                                                overseer)
+        paused = handle_plant_population_button(event,
+                                                plant_population_button,
+                                                pause_button,
+                                                paused,
+                                                overseer)
+        selected_slot = handle_select_slot(event, save_slot1,
+                                           save_slot2,
+                                           save_slot3)
         handle_save_button(event, save_button, overseer, selected_slot)
         handle_load_button(event, load_button, overseer, selected_slot)
 

@@ -9,7 +9,8 @@ class TestMethods(unittest.TestCase):
 
     def test_grow_food(self):
         self.params = EditableParameters()
-        env = Environment(20, 20, self.params.get_start_plants(), self.params.get_start_organisms())
+        env = Environment(20, 20, self.params.get_start_plants(),
+                          self.params.get_start_organisms())
         env.organisms = []  # remove creatures
         for x in range(20):
             for y in range(20):
@@ -21,7 +22,8 @@ class TestMethods(unittest.TestCase):
 
     def test_grow_food_without_exceeding_max(self):
         self.params = EditableParameters()
-        env = Environment(20, 20, self.params.get_start_plants(), self.params.get_start_organisms())
+        env = Environment(20, 20, self.params.get_start_plants(),
+                          self.params.get_start_organisms())
         env.organisms = []  # remove creatures
         for x in range(20):
             for y in range(20):

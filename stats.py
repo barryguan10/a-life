@@ -14,6 +14,8 @@ class Stats:
         self.alive_over_time = []
         self.plants_over_time = []
         self.average_speed_over_time = []
+        self.color_dict = {}
+        self.color_over_time = []
 
     def tally_alive_organism(self, org: Organism):
         """Takes in an organism and adds it to all the stats
@@ -21,11 +23,19 @@ class Stats:
         self.organism_count += 1
         self.total_speed += org.speed
         self.curr_organism_alive_count += 1
+        color = org.color
+        if color in self.color_dict:
+            self.color_dict[color] += 1
+        else:
+            self.color_dict[color] = 1
 
     def tally_dead_organism(self, org: Organism):
         """Adjusts the current organim stats for when an organism dies"""
         self.curr_organism_alive_count -= 1
         self.curr_speed_sum -= org.speed
+        color = org.color
+        if color in self.color_dict:
+            self.color_dict[color] -= 1
 
     def tally_alive_plant(self):
         """tallies an alive plant"""
@@ -34,13 +44,16 @@ class Stats:
 
     def tally_dead_plant(self):
         """Adjusts the current stats for when a plant gets eaten"""
-        self.curr_organism_alive_count -= 1
+        self.curr_plant_alive_count -= 1
 
     def snapshot(self, time):
         """Method for gathering current data and logging the time"""
 
         # Capture current amount of organisms alive
         self.alive_over_time.append((time, self.curr_organism_alive_count))
+
+        # capture current color population
+        self.color_over_time.append((time, self.color_dict.copy()))
 
         if self.curr_organism_alive_count > 0:
             alive = self.curr_organism_alive_count
@@ -63,3 +76,11 @@ class Stats:
     def get_alive_over_time(self):
         """Returns list of tuples of time and alive organisms at that time"""
         return self.alive_over_time
+
+    def get_color_over_time(self):
+        """Returns list of tuples of time and color dictionary at that time"""
+        return self.color_over_time
+
+    def get_plant_over_time(self):
+        """Returns list of tuples of time and alive plants at that time"""
+        return self.plants_over_time

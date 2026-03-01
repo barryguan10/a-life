@@ -67,6 +67,7 @@ class Environment:
         self.grid[x][y]["occupancy"] = gl.ENERGY
         self.grid[x][y]["food"] = energy_val
         self.toggle_empty_places((x, y))
+        self.stats.tally_alive_plant()
 
     def populate_food_clustered(self, radius=3):
         """Populate food in clusters using total start_plants count"""
@@ -168,6 +169,7 @@ class Environment:
                 self.grid[random_x][random_y]["occupancy"] = gl.ENERGY
                 self.grid[random_x][random_y]["food"] = 1
                 self.toggle_empty_places((random_x, random_y))
+                self.stats.tally_alive_plant()
                 break
         self.count_down_spawn_plant = None
 
@@ -180,7 +182,9 @@ class Environment:
 
     def decrement_spawn_plant_timer(self):
         if self.count_down_spawn_plant == 0:
-            self.spawn_plant()
+            plant_count = random.randint(2, 7)
+            for _ in range(plant_count):
+                self.spawn_plant()
         elif self.count_down_spawn_plant is not None:
             self.count_down_spawn_plant -= 1
 
@@ -296,6 +300,8 @@ class Environment:
         energy_amount = self.grid[pos_x][pos_y]["food"]
 
         self.grid[pos_x][pos_y]["food"] = 0
+        if energy_amount > 0:
+            self.stats.tally_dead_plant()
 
         return energy_amount
 
@@ -357,7 +363,7 @@ class Environment:
             # Choose a random space from the empty adjacent spaces to spawn
             child_x, child_y = random.choice(empty_spaces)
             child_genome = org.genome.copy_genes()
-            child_genome.mutate(rate=0.05, std_dev=0.1)
+            child_genome.mutate()
             org.adjust_energy(-org.reproduction_energy_cost)
 
             child = Organism(genome=child_genome, x_pos=child_x, y_pos=child_y)
@@ -428,7 +434,7 @@ class Environment:
         child_genes = np.concatenate((genome_1.get_genes()[:split],
                                       genome_2.get_genes()[split:]))
         child_genome = genome.Genome(child_genes)
-        child_genome.mutate(rate=0.05, std_dev=0.1)
+        child_genome.mutate()
 
         parent_1.adjust_energy(-parent_1.reproduction_energy_cost)
         parent_2.adjust_energy(-parent_2.reproduction_energy_cost)
@@ -486,6 +492,7 @@ class Environment:
         env.count_down_spawn_plant = dictionary["count_down_spawn_plant"]
         env.empty_places = set(tuple(i) for i in dictionary["empty_places"])
         env.grid = dictionary["grid"]
-        env.organisms = [Organism.from_dictionary(org) for org in dictionary["organisms"]]
+        env.organisms = [Organism.from_dictionary(org)
+                         for org in dictionary["organisms"]]
 
         return env

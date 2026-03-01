@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from numpy import nan
 
 
 def graph_total_population(alive_over_time):
@@ -17,10 +18,145 @@ def graph_total_population(alive_over_time):
     plt.figure(num="Total Population Per Iteration")
     plt.plot(time, total_population)
 
+    # Set Y axis to integer tick marks only.
+    plt.locator_params(axis='y', integer=True)
+
     # Label axes and title
     plt.xlabel("Iteration Number")
     plt.ylabel("Total Population")
     plt.title("Total Population per Iteration")
+
+    # Add grid for readability
+    plt.grid(True)
+
+    # Show the graph
+    plt.show()
+
+
+def build_color_dictionary(color_over_time):
+    """Build a dictionary of all color keys with blank entries lists
+
+    Args:
+        param1: list of tuples of time and dictionary of colors at that time
+
+    Returns:
+        Dictionary of colors and an empty list of their population counts
+    """
+    all_color_dict = {}
+
+    for _, color_dict in color_over_time:
+        for color in color_dict:
+            if color not in all_color_dict:
+                all_color_dict[color] = list()
+    return all_color_dict
+
+
+def populate_color_dictionary(color_over_time, all_color_dict, times):
+    """Populate the all_color_dict with the counts for each color at each time
+
+    Args:
+        param1: list of tuples of time and dictionary of colors at that time
+        param2: dictionary of colors and an empty list of their population
+        counts
+        param3: list to be populated with times
+
+    Returns:
+        None, updates all_color_dict with population counts and times list
+        with times
+    """
+    for time, color_dict in color_over_time:
+        times.append(time)
+        for color, counts in all_color_dict.items():
+            if color in color_dict:
+                all_color_dict[color].append(color_dict[color])
+            else:
+                all_color_dict[color].append(0)
+
+
+def convert_zeros_to_nan(counts):
+    """Convert zero counts to NaN for better graphing
+
+    Args:
+        param1: list of population counts for a color over time
+    Returns:
+        None, updates counts list with zeros converted to NaN when the zero
+        is not preceeded by or followed by a non-zero count
+    """
+    for index, value in enumerate(counts):
+        if index == 0:
+            prev_value = 0
+        else:
+            prev_value = counts[index - 1]
+
+        if index + 1 <= len(counts) - 1:
+            next_value = counts[index + 1]
+        else:
+            next_value = 0
+
+        if value == 0 and prev_value == 0 and next_value == 0:
+            counts[index] = nan
+
+
+def graph_color_population(color_over_time):
+    """Graph color population over time using matplotlib
+
+    Args:
+        param1: list of tuples of time and dictionary of colors at that time
+
+    Returns:
+        None, displays graph of total color population over time
+    """
+    times = []
+
+    # Build a dictionary of all colors and a list of times
+    all_color_dict = build_color_dictionary(color_over_time)
+
+    # populate the all_color_dict with the counts for each color at each time
+    populate_color_dictionary(color_over_time, all_color_dict, times)
+
+    plt.figure(num="Genome Color Population Per Iteration")
+    for color, counts in all_color_dict.items():
+        plot_color = tuple([x/255 for x in color])
+        convert_zeros_to_nan(counts)
+        plt.plot(times, counts, label=color, color=plot_color)
+
+    # Set Y axis to integer tick marks only.
+    plt.locator_params(axis='y', integer=True)
+
+    # Label axes and title
+    plt.xlabel("Iteration Number")
+    plt.ylabel("Population by color")
+    plt.title("Genome Color Population per Iteration")
+
+    # Add grid for readability
+    plt.grid(True)
+
+    # Show the graph
+    plt.show()
+
+
+def graph_plant_population(plant_over_time):
+    """Graph total plant population over time using matplotlib
+
+    Args:
+        param1: list of tuples of time and alive plants at that time
+
+    Returns:
+        None, displays graph of total plant population over time
+    """
+    # Get independent times and total population lists from alive_over_time
+    time, plant_population = zip(*plant_over_time)
+
+    plt.figure(num="Total Population Per Iteration")
+    plt.plot(time, plant_population)
+
+    # Set Y axis to integer tick marks only.
+    plt.locator_params(axis='y', integer=True)
+
+    # Label axes and title
+    plt.xlabel("Iteration Number")
+    plt.ylabel("Total Plant Population")
+    plt.title("Total Plant Population per Iteration")
 
     # Add grid for readability
     plt.grid(True)
