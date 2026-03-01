@@ -11,7 +11,7 @@ class Genome:
     def __init__(self, genes=None, size=6):
         self.genes = genes if genes is not None else np.random.rand(size)
 
-    def mutate(self, rate=0.05, std_dev=0.1):
+    def mutate(self, rate=0.25, std_dev=0.2):
         '''Mutate Function, can be called to mutate genes
         Args:
             param1: rate (float) between 0 and 1, inclusive. Represents the
