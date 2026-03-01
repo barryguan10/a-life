@@ -180,7 +180,9 @@ class Environment:
 
     def decrement_spawn_plant_timer(self):
         if self.count_down_spawn_plant == 0:
-            self.spawn_plant()
+            plant_count = random.randint(2, 7)
+            for _ in range(plant_count):
+                self.spawn_plant()
         elif self.count_down_spawn_plant is not None:
             self.count_down_spawn_plant -= 1
 
