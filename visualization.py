@@ -94,3 +94,34 @@ def graph_color_population(color_over_time):
 
     # Show the graph
     plt.show()
+
+
+def graph_plant_population(plant_over_time):
+    """Graph total plant population over time using matplotlib
+
+    Args:
+        param1: list of tuples of time and alive plants at that time
+
+    Returns:
+        None, displays graph of total plant population over time
+    """
+
+    # Get independent times and total population lists from alive_over_time
+    time, plant_population = zip(*plant_over_time)
+
+    plt.figure(num="Total Population Per Iteration")
+    plt.plot(time, plant_population)
+
+    # Set Y axis to integer tick marks only.
+    plt.locator_params(axis='y', integer=True)
+
+    # Label axes and title
+    plt.xlabel("Iteration Number")
+    plt.ylabel("Total Plant Population")
+    plt.title("Total Plant Population per Iteration")
+
+    # Add grid for readability
+    plt.grid(True)
+
+    # Show the graph
+    plt.show()
