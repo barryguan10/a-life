@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from numpy import nan
 
 
 def graph_total_population(alive_over_time):
@@ -62,6 +63,22 @@ def graph_color_population(color_over_time):
     plt.figure(num="Genome Color Population Per Iteration")
     for color, counts in all_color_dict.items():
         plot_color = tuple([x/255 for x in color])
+
+        # Don't plot zero counts unless it's the first zero or last zero
+        for index, value in enumerate(counts):
+            if index == 0:
+                prev_value = 0
+            else:
+                prev_value = counts[index - 1]
+
+            if index + 1 <= len(counts) - 1:
+                next_value = counts[index + 1]
+            else:
+                next_value = 0
+
+            if value == 0 and prev_value == 0 and next_value == 0:
+                counts[index] = nan
+
         plt.plot(times, counts, label=color, color=plot_color)
 
     # Set Y axis to integer tick marks only.
