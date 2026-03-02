@@ -84,3 +84,36 @@ class Stats:
     def get_plant_over_time(self):
         """Returns list of tuples of time and alive plants at that time"""
         return self.plants_over_time
+
+    def to_dictionary(self):
+        """Converts the object into a dictionary"""
+        dictionary = {
+            "organism_count": self.organism_count,
+            "total_plants": self.total_plants,
+            "total_speed": self.total_speed,
+            "curr_speed_sum": self.curr_speed_sum,
+            "curr_organism_alive_count": self.curr_organism_alive_count,
+            "curr_plant_alive_count": self.curr_plant_alive_count,
+            "alive_over_time": self.alive_over_time,
+            "plants_over_time": self.plants_over_time,
+            "average_speed_over_time": self.average_speed_over_time,
+            "color_dict": [[list(k), v] for k, v in self.color_dict.items()],
+            "color_over_time": [[t, [[list(k), v] for k, v in cdict.items()]] for t, cdict in self.color_over_time]
+        }
+        return dictionary
+
+    @classmethod
+    def from_dictionary(class_type, dictionary):
+        """Converts a dictionary to an object"""
+        stat = class_type()
+        stat.organism_count = dictionary["organism_count"]
+        stat.total_plants = dictionary["total_plants"]
+        stat.curr_speed_sum = dictionary["curr_speed_sum"]
+        stat.curr_organism_alive_count = dictionary["curr_organism_alive_count"]
+        stat.curr_plant_alive_count = dictionary["curr_plant_alive_count"]
+        stat.alive_over_time = list(tuple(i) for i in dictionary["alive_over_time"])
+        stat.plants_over_time = list(tuple(i) for i in dictionary["plants_over_time"])
+        stat.average_speed_over_time = list(tuple(i) for i in dictionary["average_speed_over_time"])
+        stat.color_dict = {tuple(k): v for k, v in dictionary["color_dict"]}
+        stat.color_over_time = list(tuple(i) for i in dictionary["color_over_time"])
+        return stat
