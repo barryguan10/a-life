@@ -468,7 +468,8 @@ class Environment:
             "grid": self.grid,
             "start_plants": self.start_plants,
             "start_organisms": self.start_organisms,
-            "organisms": [org.to_dictionary() for org in self.organisms]
+            "organisms": [org.to_dictionary() for org in self.organisms],
+            "stats": self.stats.to_dictionary()
 
         }
         return dictionary
@@ -494,5 +495,6 @@ class Environment:
         env.grid = dictionary["grid"]
         env.organisms = [Organism.from_dictionary(org)
                          for org in dictionary["organisms"]]
+        env.stats = stats.Stats.from_dictionary(dictionary=dictionary["stats"])
 
         return env
