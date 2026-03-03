@@ -115,5 +115,6 @@ class Stats:
         stat.plants_over_time = list(tuple(i) for i in dictionary["plants_over_time"])
         stat.average_speed_over_time = list(tuple(i) for i in dictionary["average_speed_over_time"])
         stat.color_dict = {tuple(k): v for k, v in dictionary["color_dict"]}
-        stat.color_over_time = list(tuple(i) for i in dictionary["color_over_time"])
+        stat.color_over_time = [(t, {tuple(k): v for k, v in color_items}) for t, color_items
+                                in dictionary["color_over_time"]]
         return stat

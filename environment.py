@@ -469,8 +469,8 @@ class Environment:
             "start_plants": self.start_plants,
             "start_organisms": self.start_organisms,
             "organisms": [org.to_dictionary() for org in self.organisms],
-            "stats": self.stats.to_dictionary()
-
+            "stats": self.stats.to_dictionary(),
+            "iteration_count": self.iteration_count
         }
         return dictionary
 
@@ -496,5 +496,6 @@ class Environment:
         env.organisms = [Organism.from_dictionary(org)
                          for org in dictionary["organisms"]]
         env.stats = stats.Stats.from_dictionary(dictionary=dictionary["stats"])
+        env.iteration_count = dictionary["iteration_count"]
 
         return env
