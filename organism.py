@@ -1,6 +1,6 @@
 from genome import Genome
 from colorsys import hsv_to_rgb
-from random import choice
+from random import choice, random
 import globals as gl
 
 
@@ -104,7 +104,21 @@ class Organism:
         if heading in options:
             self.heading = heading
 
-    def choose_action(self, local_view):
+    def build_choice_lists(self, view):
+        energy_pos = []
+        unoccupied_pos = []
+        for element in view:
+            pos, status, _ = element
+            # Priority 1: Energy
+            if status == gl.ENERGY:
+                energy_pos.append(pos)
+
+            # Final Priority: Random available direction
+            if status == gl.UNOCCUPIED:
+                unoccupied_pos.append(pos)
+        return energy_pos, unoccupied_pos
+
+    def choose_action(self, local_view, heading_view):
         """Takes a local view of an organisms surroundings and returns an
         action the organism desires to take.
 
@@ -127,23 +141,21 @@ class Organism:
             #TODO: In the future may ammend this to return a prioritized list
             of actions, in order of preference for the creature.
         """
-        energy_pos = []
-        unoccupied_pos = []
+        local_energy_pos, local_unoccupied_pos = (
+            self.build_choice_lists(local_view))
+        _, heading_unoccupied_pos = (
+            self.build_choice_lists(heading_view))
 
-        for element in local_view:
-            pos, status, _ = element
-            # Priority 1: Energy
-            if status == gl.ENERGY:
-                energy_pos.append(pos)
-
-            # Final Priority: Random available direction
-            if status == gl.UNOCCUPIED:
-                unoccupied_pos.append(pos)
-
-        if len(energy_pos) > 0:
-            return choice(energy_pos)
-        if len(unoccupied_pos) > 0:
-            return choice(unoccupied_pos)
+        # if len(heading_energy_pos) > 0:
+        #     return choice(heading_energy_pos)
+        if len(local_energy_pos) > 0:
+            return choice(local_energy_pos)
+        if len(heading_unoccupied_pos) > 0 and random() > 0.25:
+            return heading_unoccupied_pos[0]
+        if len(heading_unoccupied_pos) > 0:
+            return choice(heading_unoccupied_pos)
+        if len(local_unoccupied_pos) > 0:
+            return choice(local_unoccupied_pos)
         return None
 
     def movement_cost(self):

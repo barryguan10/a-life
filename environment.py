@@ -182,7 +182,7 @@ class Environment:
 
     def decrement_spawn_plant_timer(self):
         if self.count_down_spawn_plant == 0:
-            plant_count = random.randint(2, 7)
+            plant_count = random.randint(3, 7)
             for _ in range(plant_count):
                 self.spawn_plant()
         elif self.count_down_spawn_plant is not None:
@@ -283,6 +283,68 @@ class Environment:
 
         return surr_items
 
+    def adjust_heading(self, organism: Organism, heading_items):
+        """
+        Adjusts the heading of an organism based on the heading_items list
+        """
+        # If there are no items in the heading, change the heading to a random
+        # one
+        if len(heading_items) == 0:
+            organism.set_heading(random.choice(gl.HEADINGS))
+        # 35% chance to change heading to an adjacent direction
+        elif random.random() <= 0.35:
+            index = gl.HEADINGS.index(organism.get_heading())
+            if random.random() < 0.5:
+                new_index = (index + 1) % len(gl.HEADINGS)
+            else:
+                new_index = (index - 1) % len(gl.HEADINGS)
+            organism.set_heading(gl.HEADINGS[new_index])
+
+    def get_heading_surroundings(self, organism: Organism):
+        """
+        A function to return the surroundings of an organism in the heading
+        direction of the organism
+
+        :param self: The environment instance
+        :param organism: The organism for the surroundings to be returned
+        """
+        # Get the current position of the organism
+        org_x, org_y = organism.get_pos()
+
+        heading = organism.get_heading()
+        # Get the heading view based on organism's heading
+        heading_positions = gl.DIRECTIONS[heading]
+
+        heading_items = list()
+
+        for pos in heading_positions:
+            x_offset, y_offset = pos
+
+            new_x = org_x + x_offset
+            new_y = org_y + y_offset
+
+            # Check each position to see if something is there and
+            # if so add its location and what it is to the heading_items list
+            if 0 <= new_x < self.width and 0 <= new_y < self.height:
+                cell = self.grid[new_x][new_y]
+                occupancy = cell["occupancy"]
+                occupant_object = None
+
+                # Search the list of organisms for this organism so we can
+                # return instance of it
+                if occupancy == gl.CREATURE:
+                    for organism in self.organisms:
+                        if organism.get_pos() == (new_x, new_y):
+                            occupant_object = organism
+                            break
+                heading_items.append(
+                    ((new_x, new_y),
+                     self.grid[new_x][new_y]["occupancy"],
+                     occupant_object)
+                )
+        self.adjust_heading(organism, heading_items)
+        return heading_items
+
     def take_energy(self, organism: Organism):
         """
         Docstring for take_energy
@@ -312,8 +374,9 @@ class Environment:
         for org in self.organisms:
             if org.get_energy() <= 0:
                 continue
+            heading_surroundings = self.get_heading_surroundings(org)
             surroundings = self.get_surroundings(org)
-            move = org.choose_action(surroundings)
+            move = org.choose_action(surroundings, heading_surroundings)
             if move is None:
                 continue
             if move not in move_dict:
