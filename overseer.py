@@ -1,5 +1,6 @@
 import environment
 import json
+from pathlib import Path
 import os
 
 
@@ -33,12 +34,18 @@ class Overseer:
         # call analysis function to update species
         # call display function to draw environment
 
+    def get_saves_folder(self):
+        appdata = os.getenv("APPDATA")
+        saves_folder = Path(appdata) / "ALifeSimulation" / "saves"
+        saves_folder.mkdir(parents=True, exist_ok=True)
+        return saves_folder
+
     def save(self, slot_number):
         """
         Method to save objects of the simulation to a JSON File
         """
         if slot_number in (1, 2, 3):
-            file_name = f"saves/{slot_number}.json"
+            file_name = self.get_saves_folder() / f"{slot_number}.json"
             data = self.environment_instance.to_dictionary()
             with open(file_name, "w") as f:
                 json.dump(data, f)
@@ -50,7 +57,7 @@ class Overseer:
         Method to load the simulation from a JSON file
         """
         if slot_number in (1, 2, 3):
-            file_name = f"saves/{slot_number}.json"
+            file_name = self.get_saves_folder() / f"{slot_number}.json"
             if not os.path.exists(file_name):
                 return
 
@@ -64,9 +71,11 @@ class Overseer:
         slots = (1, 2, 3)
         existing = set()
 
+        saves_folder = self.get_saves_folder()
+
         for i in slots:
-            file_name = f"saves/{i}.json"
-            if os.path.exists(file_name):
+            file_name = saves_folder / f"{i}.json"
+            if file_name.exists():
                 existing.add(i)
 
         return existing
